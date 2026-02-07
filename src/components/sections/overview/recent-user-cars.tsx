@@ -5,8 +5,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function RecentUserCars() {
   const { data, isLoading } = useGetUsersCarsQuery();
 
-  const cars: UserCar[] = data?.data ?? [];
-
+const cars: UserCar[] = (data?.data ?? [])
+  .sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() -
+      new Date(a.created_at).getTime(),
+  )
+  .slice(0, 10);
+  
+  
   if (isLoading) {
     return (
       <div className="space-y-3">
