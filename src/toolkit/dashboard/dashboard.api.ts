@@ -164,10 +164,6 @@ interface TicketsResponse {
   };
 }
 
-// --------------------
-// Users Cars (from /cars API)
-// --------------------
-
 export interface UserCar {
   id: string;
   user_id: string;
@@ -192,6 +188,7 @@ export interface UserCar {
   car_brand: CarBrand;
   car_model: CarModel;
 }
+
 
 export const dashboardApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
@@ -243,11 +240,11 @@ export const dashboardApi = commonApi.injectEndpoints({
         return (response?.data as unknown as ErrorResponse)?.error;
       },
     }),
-getCars: build.query<UsersCarsResponse, void>({
-  query: () => ({
-    url: "cars/public",
-  }),
-}),
+	getUsersCars: build.query<UsersCarsResponse, void>({
+  		query: () => ({
+    		url: "cars/public",
+  			}),
+		}),
   }),
   overrideExisting: true,
 });
@@ -259,5 +256,5 @@ export const {
   useGetRevenueQuery,
   useGetSubscriptionsQuery,
   useGetTicketsQuery,
-  useGetCarsQuery,
+  useGetUsersCarsQuery,
 } = dashboardApi;
