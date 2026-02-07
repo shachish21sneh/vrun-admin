@@ -241,10 +241,10 @@ export const dashboardApi = commonApi.injectEndpoints({
       },
     }),
 	getUsersCars: build.query<UsersCarsResponse, void>({
-  		query: () => ({
-    		url: "cars/public",
-  			}),
-		}),
+  query: () => ({
+    url: "cars/public",
+  }),
+}),
   }),
   overrideExisting: true,
 });

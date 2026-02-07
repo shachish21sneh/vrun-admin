@@ -1,10 +1,9 @@
-import { useGetCarsQuery } from "@/toolkit/dashboard/dashboard.api";
+import { useGetUsersCarsQuery } from "@/toolkit/dashboard/dashboard.api";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
 export function RecentUserCars() {
-  const { data, isLoading } = useGetCarsQuery();
-
+const { data, isLoading } = useGetUsersCarsQuery();
   if (isLoading) {
     return (
       <div className="space-y-3">
