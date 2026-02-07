@@ -1,10 +1,10 @@
-import { useGetUsersCarsQuery } from "@/toolkit/dashboard/dashboard.api";
+import { useGetCarsQuery } from "@/toolkit/dashboard/dashboard.api";
 import type { UserCar } from "@/toolkit/dashboard/dashboard.api";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
 export function RecentUserCars() {
-  const { data, isLoading } = useGetUsersCarsQuery();
+const { data, isLoading } = useGetCarsQuery();
 
   if (isLoading) {
     return (

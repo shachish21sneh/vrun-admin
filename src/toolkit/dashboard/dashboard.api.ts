@@ -278,5 +278,5 @@ export const {
   useGetRevenueQuery,
   useGetSubscriptionsQuery,
   useGetTicketsQuery,
-  useGetUsersCarsQuery,
+  useGetCarsQuery,
 } = dashboardApi;
