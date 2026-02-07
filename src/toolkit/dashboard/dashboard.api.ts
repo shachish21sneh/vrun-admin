@@ -164,6 +164,18 @@ interface TicketsResponse {
   };
 }
 
+export interface CarBrand {
+  name: string;
+  display_name: string;
+  icon: string;
+}
+
+export interface CarModel {
+  name: string;
+  display_name: string;
+  icon: string;
+}
+
 export interface UserCar {
   id: string;
   user_id: string;
