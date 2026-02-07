@@ -1,10 +1,11 @@
-import { useGetCarsQuery } from "@/toolkit/cars/cars.api";
+import { useGetUsersCarsQuery } from "@/toolkit/dashboard/dashboard.api";
+import type { UserCar } from "@/toolkit/dashboard/dashboard.api";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
-import { useGetUsersCarsQuery } from "@/toolkit/dashboard/dashboard.api";
 
 export function RecentUserCars() {
-const { data, isLoading } = useGetUsersCarsQuery();
+  const { data, isLoading } = useGetUsersCarsQuery();
+
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -33,7 +34,6 @@ const { data, isLoading } = useGetUsersCarsQuery();
                 height={40}
                 className="rounded object-contain"
               />
-
               <div>
                 <p className="font-medium">
                   {car.car_model.display_name}
