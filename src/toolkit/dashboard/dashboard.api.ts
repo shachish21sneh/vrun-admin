@@ -76,6 +76,27 @@ interface RevenueResponse {
   };
 }
 
+interface Car {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userPhone: string;
+  registrationYear: string;
+  sunroofType: string;
+  active: boolean;
+  createdAt: string;
+  orderId: string;
+}
+
+interface RecentCarsResponse {
+  success: boolean;
+  data: {
+    cars: Car[];
+    count: number;
+  };
+}
+
 interface Subscription {
   id: string;
   userId: string;
@@ -198,6 +219,16 @@ export const dashboardApi = commonApi.injectEndpoints({
         return (response?.data as unknown as ErrorResponse)?.error;
       },
     }),
+	
+	getRecentCars: build.query<RecentCarsResponse, { limit?: number }>({
+  query: ({ limit = 10 }) => ({
+    url: `dashboard/recent-cars?limit=${limit}`,
+  }),
+  transformErrorResponse: (response) => {
+    return (response?.data as unknown as ErrorResponse)?.error;
+  },
+}),
+	
     getSubscriptions: build.query<SubscriptionsResponse, { period?: string }>({
       query: ({ period = "30d" }) => ({
         url: `dashboard/subscriptions?period=${period}`,
@@ -225,4 +256,5 @@ export const {
   useGetRevenueQuery,
   useGetSubscriptionsQuery,
   useGetTicketsQuery,
+  useGetRecentCarsQuery,
 } = dashboardApi;
