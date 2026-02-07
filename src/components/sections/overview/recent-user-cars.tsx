@@ -1,9 +1,13 @@
 import { useGetUsersCarsQuery } from "@/toolkit/dashboard/dashboard.api";
+import type { UserCar } from "@/toolkit/dashboard/dashboard.api";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
 export function RecentUserCars() {
-const { data, isLoading } = useGetUsersCarsQuery();
+  const { data, isLoading } = useGetUsersCarsQuery();
+
+  const cars: UserCar[] = data?.data ?? [];
+
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -19,9 +23,8 @@ const { data, isLoading } = useGetUsersCarsQuery();
       <div className="p-4 font-medium">Recently Added Cars</div>
 
       <div className="divide-y">
-        {data?.data?.map((car) => (
+        {cars.map((car) => (
           <div key={car.id} className="p-4 space-y-2">
-            {/* TOP */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Image
@@ -49,56 +52,6 @@ const { data, isLoading } = useGetUsersCarsQuery();
                   {car.registration_year}
                 </p>
               </div>
-            </div>
-
-            {/* DETAILS */}
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <span>
-                👤 <b>User ID:</b> {car.user_id}
-              </span>
-
-              <span>
-                💳 <b>Plan:</b> {car.plan_name ?? "No Plan"}
-              </span>
-
-              <span>
-                💰 <b>Amount:</b>{" "}
-                {car.amount ? `₹${car.amount}` : "—"}
-              </span>
-            </div>
-
-            {/* PAYMENT */}
-            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-              <span>
-                📦 Order: {car.order_id ?? "—"}
-              </span>
-
-              <span>
-                🧾 Payment: {car.razorpay_payment_id ?? "—"}
-              </span>
-
-              <span>
-                🗓️{" "}
-                {car.plan_start
-                  ? `${new Date(
-                      car.plan_start,
-                    ).toLocaleDateString()} → ${new Date(
-                      car.plan_end!,
-                    ).toLocaleDateString()}`
-                  : "No plan period"}
-              </span>
-
-              {car.plan_status === "active" && (
-                <span className="rounded bg-green-100 px-2 py-0.5 text-green-700">
-                  Active
-                </span>
-              )}
-            </div>
-
-            {/* FOOTER */}
-            <div className="text-xs text-muted-foreground">
-              Created:{" "}
-              {new Date(car.created_at).toLocaleString()}
             </div>
           </div>
         ))}
