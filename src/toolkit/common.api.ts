@@ -15,14 +15,16 @@ export const commonApi = createApi({
     mode: "cors",
     baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
     prepareHeaders: (headers) => {
-      const token = getCookie(V_AUTH_TOKEN);
+  const token = getCookie(V_AUTH_TOKEN);
 
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
+  console.log("AUTH TOKEN FROM COOKIE:", token);
 
-      return headers;
-    },
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  return headers;
+},
   }),
   tagTypes: ["User", "Datasets", "Tasks", "Models"],
   endpoints: () => ({}),
