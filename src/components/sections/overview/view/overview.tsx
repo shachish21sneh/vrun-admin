@@ -9,6 +9,7 @@ import { RecentSubscriptions } from "../recent-subscriptions";
 import PageContainer from "@/components/layout/page-container";
 import { RecentSales } from "../recent-sales";
 import { Button } from "@/components/ui/button";
+import { RecentUserCars } from "../recent-user-cars";
 import {
   Card,
   CardContent,
@@ -274,6 +275,14 @@ export default function OverViewPage() {
                 <RecentSubscriptions period={period} />
               </div>
             </div>
+			
+			{/* Users Car Section */}
+			<div className="mt-6 space-y-4">
+				<h3 className="text-lg font-semibold">Users Car List</h3>
+				<div className="grid gap-4">
+					<RecentUserCars />
+				</div>
+			</div>
 
             {/* Ticket Insights Section */}
             <div className="mt-6 space-y-4">

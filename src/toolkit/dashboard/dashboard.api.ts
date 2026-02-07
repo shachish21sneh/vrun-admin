@@ -164,6 +164,51 @@ interface TicketsResponse {
   };
 }
 
+// --------------------
+// Users Cars (from /cars API)
+// --------------------
+
+export interface CarBrand {
+  name: string;
+  display_name: string;
+  icon: string;
+}
+
+export interface CarModel {
+  name: string;
+  display_name: string;
+  icon: string;
+}
+
+export interface PlanDetails {
+  plan_id: string;
+  plan_name: string;
+  order_id: string;
+  razorpay_payment_id: string;
+  amount: string;
+  plan_start: string;
+  plan_end: string;
+  plan_status: "active" | "inactive" | "expired";
+}
+
+export interface UserCar {
+  id: string;
+  user_id: string;
+  registration_number: string;
+  registration_year: string;
+  sunroof_type: string;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+  car_brand: CarBrand;
+  car_model: CarModel;
+  plan_details: PlanDetails | null;
+}
+
+export interface UsersCarsResponse {
+  data: UserCar[];
+}
+
 export const dashboardApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
     getOverview: build.query<OverviewResponse, { period?: string }>({
@@ -214,6 +259,14 @@ export const dashboardApi = commonApi.injectEndpoints({
         return (response?.data as unknown as ErrorResponse)?.error;
       },
     }),
+	getUsersCars: build.query<UsersCarsResponse, void>({
+  query: () => ({
+    url: `cars`,
+  }),
+  transformErrorResponse: (response) => {
+    return (response?.data as unknown as ErrorResponse)?.error;
+  },
+}),
   }),
   overrideExisting: true,
 });
@@ -225,4 +278,5 @@ export const {
   useGetRevenueQuery,
   useGetSubscriptionsQuery,
   useGetTicketsQuery,
+  useGetUsersCarsQuery,
 } = dashboardApi;
