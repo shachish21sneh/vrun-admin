@@ -261,7 +261,7 @@ export const dashboardApi = commonApi.injectEndpoints({
     }),
 getCars: build.query<UsersCarsResponse, void>({
   query: () => ({
-    url: "/api/cars",
+    url: "cars",
   }),
 }),
   }),
