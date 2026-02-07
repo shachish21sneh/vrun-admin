@@ -1,10 +1,10 @@
 import { useGetCarsQuery } from "@/toolkit/dashboard/dashboard.api";
-import type { UserCar } from "@/toolkit/dashboard/dashboard.api";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
 export function RecentUserCars() {
-const { data, isLoading, error } = useGetCarsQuery();
+const { data } = useGetUsersCarsQuery();
+const cars = data?.data as UserCar[] | undefined;
 
 console.log("CARS DATA:", data);
 console.log("CARS ERROR:", error);
@@ -29,12 +29,14 @@ console.log("CARS ERROR:", error);
       {/* TOP */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img
-            src={car.car_model.icon}
-            alt={car.car_model.display_name}
-            className="h-10 w-10 object-contain"
-          />
-          <div>
+<Image
+  src={car.car_model.icon}
+  alt={car.car_model.display_name}
+  width={40}
+  height={40}
+  className="object-contain"
+/>
+<div>
             <p className="font-medium">{car.car_model.display_name}</p>
             <p className="text-sm text-muted-foreground">
               {car.car_brand.display_name}
