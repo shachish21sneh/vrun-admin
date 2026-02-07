@@ -4,7 +4,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
 export function RecentUserCars() {
-const { data, isLoading } = useGetCarsQuery();
+const { data, isLoading, error } = useGetCarsQuery();
+
+console.log("CARS DATA:", data);
+console.log("CARS ERROR:", error);
 
   if (isLoading) {
     return (
@@ -21,6 +24,9 @@ const { data, isLoading } = useGetCarsQuery();
       <div className="p-4 font-medium">Recently Added Cars</div>
 
       <div className="divide-y">
+	  if (!data?.data?.length) {
+  return <div className="p-4 text-sm text-muted-foreground">No cars found</div>;
+}
         {data?.data?.map((car: UserCar) => (
           <div
             key={car.id}

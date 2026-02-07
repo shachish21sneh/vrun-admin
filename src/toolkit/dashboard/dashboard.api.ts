@@ -261,11 +261,8 @@ export const dashboardApi = commonApi.injectEndpoints({
     }),
 getCars: build.query<UsersCarsResponse, void>({
   query: () => ({
-    url: "cars",
+    url: "/api/cars",
   }),
-  transformErrorResponse: (response) => {
-    return (response?.data as unknown as ErrorResponse)?.error;
-  },
 }),
   }),
   overrideExisting: true,

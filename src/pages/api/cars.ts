@@ -12,7 +12,7 @@ export default async function handler(
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const response = await fetch(
+  const apiRes = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/cars`,
     {
       headers: {
@@ -21,6 +21,6 @@ export default async function handler(
     }
   );
 
-  const data = await response.json();
-  res.status(response.status).json(data);
+  const data = await apiRes.json();
+  return res.status(200).json(data);
 }
