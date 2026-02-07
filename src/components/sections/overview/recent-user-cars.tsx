@@ -22,40 +22,75 @@ export function RecentUserCars() {
     <div className="rounded-lg border">
       <div className="p-4 font-medium">Recently Added Cars</div>
 
-      <div className="divide-y">
-        {cars.map((car) => (
-          <div key={car.id} className="p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Image
-                  src={car.car_model.icon}
-                  alt={car.car_model.display_name}
-                  width={40}
-                  height={40}
-                  className="object-contain"
-                />
-                <div>
-                  <p className="font-medium">
-                    {car.car_model.display_name}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {car.car_brand.display_name}
-                  </p>
-                </div>
-              </div>
+      <div className="divide-y rounded-lg border">
+  {cars.map((car) => (
+    <div key={car.id} className="p-4 space-y-2">
+      {/* ROW 1 */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-medium">
+          Registration No:{" "}
+          <span className="font-mono">
+            {car.registration_number}
+          </span>
+        </p>
 
-              <div className="text-right">
-                <p className="font-mono text-sm">
-                  {car.registration_number}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {car.registration_year}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
+        <span
+          className={`rounded px-2 py-0.5 text-xs ${
+            car.plan_status === "active"
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-500"
+          }`}
+        >
+          {car.plan_status ?? "No Plan"}
+        </span>
       </div>
+
+      {/* ROW 2 */}
+      <div className="text-sm text-muted-foreground">
+        Registration Year: {car.registration_year}
+      </div>
+
+      {/* ROW 3 */}
+      <div className="text-sm">
+        Plan:{" "}
+        <span className="font-medium">
+          {car.plan_name ?? "—"}
+        </span>
+      </div>
+
+      {/* ROW 4 */}
+      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+        <div>Order ID: {car.order_id ?? "—"}</div>
+        <div>Payment ID: {car.razorpay_payment_id ?? "—"}</div>
+        <div>
+          Amount: {car.amount ? `₹${car.amount}` : "—"}
+        </div>
+        <div>
+          Period:{" "}
+          {car.plan_start
+            ? `${new Date(
+                car.plan_start,
+              ).toLocaleDateString()} → ${new Date(
+                car.plan_end!,
+              ).toLocaleDateString()}`
+            : "—"}
+        </div>
+      </div>
+
+      {/* ROW 5 */}
+      <div className="text-xs text-muted-foreground">
+        Created At:{" "}
+        {new Date(car.created_at).toLocaleString()}
+      </div>
+
+      {!car.active && (
+        <div className="text-xs text-red-600">
+          Inactive Car
+        </div>
+      )}
+    </div>
+  ))}
+</div>
     </div>
   );
 }
