@@ -14,11 +14,13 @@ export const commonApi = createApi({
   baseQuery: fetchBaseQuery({
     mode: "cors",
     baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-    prepareHeaders: async (headers) => {
-      const token = await getCookie(V_AUTH_TOKEN);
+    prepareHeaders: (headers) => {
+      const token = getCookie(V_AUTH_TOKEN);
+
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
+
       return headers;
     },
   }),
