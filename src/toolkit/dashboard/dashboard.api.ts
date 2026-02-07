@@ -164,6 +164,7 @@ interface TicketsResponse {
   };
 }
 
+// 1️⃣ Car brand & model
 export interface CarBrand {
   name: string;
   display_name: string;
@@ -176,6 +177,7 @@ export interface CarModel {
   icon: string;
 }
 
+// 2️⃣ User car
 export interface UserCar {
   id: string;
   user_id: string;
@@ -201,6 +203,10 @@ export interface UserCar {
   car_model: CarModel;
 }
 
+// 3️⃣ Cars response
+export interface UsersCarsResponse {
+  data: UserCar[];
+}
 
 export const dashboardApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
@@ -252,8 +258,8 @@ export const dashboardApi = commonApi.injectEndpoints({
         return (response?.data as unknown as ErrorResponse)?.error;
       },
     }),
-	getUsersCars: build.query<UsersCarsResponse, void>({
-  query: () => ({
+getUsersCars: build.query<UsersCarsResponse, void>({
+query: () => ({
     url: "cars/public",
   }),
 }),
