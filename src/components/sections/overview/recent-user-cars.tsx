@@ -24,9 +24,7 @@ console.log("CARS ERROR:", error);
       <div className="p-4 font-medium">Recently Added Cars</div>
 
       <div className="divide-y">
-	  if (!data?.data?.length) {
-  return <div className="p-4 text-sm text-muted-foreground">No cars found</div>;
-}
+	  
         {data?.data?.map((car: UserCar) => (
           <div
             key={car.id}
