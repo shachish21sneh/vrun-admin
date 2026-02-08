@@ -193,7 +193,7 @@ export interface UserCar {
   amount: string | null;
   plan_start: string | null;
   plan_end: string | null;
-  plan_status: "active" | "inactive" | "expired" | null;
+  plan_status: "active" | "inactive" | null;
 
   active: boolean;
   created_at: string;
@@ -258,11 +258,11 @@ export const dashboardApi = commonApi.injectEndpoints({
         return (response?.data as unknown as ErrorResponse)?.error;
       },
     }),
-getUsersCars: build.query<UsersCarsResponse, void>({
-query: () => ({
-    url: "cars/public",
-  }),
-}),
+	getUsersCars: build.query<UsersCarsResponse, void>({
+		query: () => ({
+    		url: "cars/public",
+  		}),
+	}),
   }),
   overrideExisting: true,
 });

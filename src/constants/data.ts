@@ -160,6 +160,13 @@ export const navItems: NavItem[] = [
     isActive: false,
     items: [], // No child items
   },
+  {
+    title: "Plans",
+    url: "/plans",
+    icon: "review",
+    isActive: false,
+    items: [], // No child items
+  },
 ];
 
 export interface TicketHistory {
@@ -271,6 +278,24 @@ export interface Testimonial {
   created_at: string;
   updated_at: string;
 }
+
+export interface Plans {
+  id: string;
+  plan_id: string;
+  name: string;
+  description: string;
+  amount: number;
+  currency: string;
+  features: string;
+  trial_period_days: string | null;
+  status: string;
+  razorpay_plan_id: string;
+  metadata: string  | null;
+  sunroof_type: string;
+  created_at: string;
+  updated_at: string;
+}
+
 
 export interface Ticket {
   id: string;
