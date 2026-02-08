@@ -163,7 +163,7 @@ export const navItems: NavItem[] = [
   {
     title: "Plans",
     url: "/plans",
-    icon: "review",
+    icon: "ellipsis",
     isActive: false,
     items: [], // No child items
   },
