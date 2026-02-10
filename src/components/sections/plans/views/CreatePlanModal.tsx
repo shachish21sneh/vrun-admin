@@ -31,7 +31,8 @@ export const CreatePlanModal = ({
   const [createPlan] = useCreatePlanMutation();
   const [updatePlan] = useUpdatePlanMutation();
 
-  const [form, setForm] = useState<PlanForm>({
+  // 👇 setForm hata diya
+  const [form] = useState<PlanForm>({
     name: "",
     price: 0,
     duration: 0,
@@ -60,8 +61,6 @@ export const CreatePlanModal = ({
   return (
     <div>
       <h2>{data ? "Update Plan" : "Create Plan"}</h2>
-
-      {/* form inputs later – abhi build fix pe focus */}
 
       <button onClick={onSubmit}>
         {data ? "Update" : "Create"}
