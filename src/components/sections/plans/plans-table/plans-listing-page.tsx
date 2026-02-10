@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { CreatePlanModal } from "../views/CreatePlanModal";
 import { useGetPlansQuery } from "@/toolkit/plans/plans.api";
+import { CreatePlanModal } from "../views/CreatePlanModal";
 
 export const PlansListingPage = () => {
-const { data: plans = [], isLoading } = useGetPlansQuery();
-const [open, setOpen] = useState(false);
-
-  const result = useGetPlansQuery();
-console.log("PLANS RESULT:", result);
+  const { data = [], isLoading } = useGetPlansQuery();
+  const [open, setOpen] = useState(false);
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -22,27 +19,22 @@ console.log("PLANS RESULT:", result);
         <thead>
           <tr>
             <th>Name</th>
-            <th>Price</th>
-            <th>Duration</th>
-            <th>Active</th>
+            <th>Amount</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
-          {plans.map((plan) => (
+          {data.map((plan) => (
             <tr key={plan.id}>
               <td>{plan.name}</td>
-              <td>{plan.price}</td>
-              <td>{plan.duration}</td>
-              <td>{plan.isActive ? "Yes" : "No"}</td>
+              <td>{plan.amount}</td>
+              <td>{plan.description}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <CreatePlanModal
-        open={open}
-        onClose={() => setOpen(false)}
-      />
+      <CreatePlanModal open={open} onClose={() => setOpen(false)} />
     </>
   );
 };
