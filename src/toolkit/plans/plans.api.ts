@@ -1,5 +1,5 @@
-import { commonApi } from "@/common/api";
-import { Plan } from "@/types";
+import { commonApi } from "../common.api";
+import type { Plan } from "@/types";
 
 export interface PlanPayload {
   name: string;
@@ -12,20 +12,10 @@ export interface PlanPayload {
   isPopular: boolean;
 }
 
-export interface PlansListResponse {
-  data: Plan[];
-}
-
 export const plansApi = {
-  list: () =>
-    commonApi.get<PlansListResponse>("/admin/plans"),
-
-  create: (data: PlanPayload) =>
-    commonApi.post("/admin/plans", data),
-
+  list: () => commonApi.get("/admin/plans"),
+  create: (data: PlanPayload) => commonApi.post("/admin/plans", data),
   update: (id: string, data: PlanPayload) =>
     commonApi.put(`/admin/plans/${id}`, data),
-
-  delete: (id: string) =>
-    commonApi.delete(`/admin/plans/${id}`)
+  delete: (id: string) => commonApi.delete(`/admin/plans/${id}`)
 };
