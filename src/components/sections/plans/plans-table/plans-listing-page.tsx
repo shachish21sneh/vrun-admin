@@ -1,9 +1,11 @@
 import { CreatePlanModal } from "../views/CreatePlanModal";
 import { useGetPlansQuery } from "@/toolkit/plans/plans.api";
+import type { Plan } from "@/types";
 
 export const PlansListingPage = () => {
   const { data, isLoading } = useGetPlansQuery();
-  const plans = data?.data ?? [];
+
+  const plans: Plan[] = data?.data ?? [];
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -23,7 +25,7 @@ export const PlansListingPage = () => {
           </tr>
         </thead>
         <tbody>
-          {plans.map((plan: any) => (
+          {plans.map((plan) => (
             <tr key={plan.id}>
               <td>{plan.name}</td>
               <td>{plan.price}</td>

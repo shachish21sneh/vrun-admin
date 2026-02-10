@@ -1,4 +1,5 @@
 import { commonApi } from "../common.api";
+import type { Plan } from "@/types";
 
 export interface PlanPayload {
   name: string;
@@ -11,9 +12,13 @@ export interface PlanPayload {
   isPopular: boolean;
 }
 
+export interface PlansListResponse {
+  data: Plan[];
+}
+
 export const plansApi = commonApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPlans: builder.query<any, void>({
+    getPlans: builder.query<PlansListResponse, void>({
       query: () => "/admin/plans",
       providesTags: ["Plans"]
     }),
