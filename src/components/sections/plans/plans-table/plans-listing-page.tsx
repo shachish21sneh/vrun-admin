@@ -8,9 +8,12 @@ export const PlansListingPage = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    plansApi.list().then((res) => {
-      setData(res.data.data);
-    });
+    const fetchPlans = async () => {
+      const response = await plansApi.list();
+      setData(response.data.data);
+    };
+
+    fetchPlans();
   }, []);
 
   return (
