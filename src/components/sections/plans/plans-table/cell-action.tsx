@@ -1,36 +1,28 @@
 import { useState } from "react";
-import { MoreHorizontal, Pencil, Trash } from "lucide-react";
-import { Plan } from "@/types/plan";
-import { plansApi } from "@/toolkit/plans/plans.api";
+import { Trash } from "lucide-react";
+import type { Plan } from "@/types";
+import { useDeletePlanMutation } from "@/toolkit/plans/plans.api";
 
 interface CellActionProps {
   data: Plan;
 }
 
 export const CellAction = ({ data }: CellActionProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [deletePlan] = useDeletePlanMutation();
+  const [loading, setLoading] = useState(false);
 
   const onDelete = async () => {
     setLoading(true);
-    await plansApi.delete(data.id);
-    window.location.reload();
+    try {
+      await deletePlan(data.id).unwrap();
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div>
-      <button>
-        <MoreHorizontal />
-      </button>
-
-      <div>
-        <button>
-          <Pencil /> Update
-        </button>
-
-        <button onClick={onDelete} disabled={loading}>
-          <Trash /> Delete
-        </button>
-      </div>
-    </div>
+    <button onClick={onDelete} disabled={loading}>
+      <Trash />
+    </button>
   );
 };
