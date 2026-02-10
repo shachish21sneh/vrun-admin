@@ -4,17 +4,11 @@ import { PlanPayload, plansApi } from "@/toolkit/plans/plans.api";
 interface CreatePlanModalProps {
   open: boolean;
   onClose: () => void;
-  data?: {
-    id: string;
-  };
+  data?: { id: string };
 }
 
-export const CreatePlanModal = ({
-  open,
-  onClose,
-  data
-}: CreatePlanModalProps) => {
-  const [form, setForm] = useState<PlanPayload>({
+export const CreatePlanModal = ({ open, onClose, data }: CreatePlanModalProps) => {
+  const [form] = useState<PlanPayload>({
     name: "",
     price: 0,
     duration: 0,
