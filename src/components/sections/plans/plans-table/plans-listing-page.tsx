@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { CreatePlanModal } from "../views/CreatePlanModal";
 import { useGetPlansQuery } from "@/toolkit/plans/plans.api";
 import type { Plan } from "@/types";
 
 export const PlansListingPage = () => {
   const { data, isLoading } = useGetPlansQuery();
+  const [open, setOpen] = useState(false);
 
   const plans: Plan[] = data?.data ?? [];
 
@@ -13,6 +15,7 @@ export const PlansListingPage = () => {
     <>
       <div className="flex justify-between mb-4">
         <h1>Plans</h1>
+        <button onClick={() => setOpen(true)}>+ Add New</button>
       </div>
 
       <table className="w-full border">
@@ -36,7 +39,10 @@ export const PlansListingPage = () => {
         </tbody>
       </table>
 
-      <CreatePlanModal />
+      <CreatePlanModal
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 };
