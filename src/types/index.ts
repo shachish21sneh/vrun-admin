@@ -1,5 +1,5 @@
 import { Icons } from '@/components/icons';
-import { Plan } from "@/types/plan";
+export type { Plan } from "./plan";
 
 export interface NavItem {
   title: string;
