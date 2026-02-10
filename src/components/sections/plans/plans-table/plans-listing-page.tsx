@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { CreatePlanModal } from "../views/CreatePlanModal";
 import { useGetPlansQuery } from "@/toolkit/plans/plans.api";
-import type { Plan } from "@/types";
 
 export const PlansListingPage = () => {
 const { data: plans = [], isLoading } = useGetPlansQuery();
