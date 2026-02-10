@@ -1,14 +1,37 @@
 import { useState } from "react";
-import { PlanPayload, plansApi } from "@/toolkit/plans/plans.api";
+import {
+  useCreatePlanMutation,
+  useUpdatePlanMutation
+} from "@/toolkit/plans/plans.api";
 
 interface CreatePlanModalProps {
   open: boolean;
   onClose: () => void;
-  data?: { id: string };
+  data?: {
+    id: string;
+  };
 }
 
-export const CreatePlanModal = ({ open, onClose, data }: CreatePlanModalProps) => {
-  const [form] = useState<PlanPayload>({
+interface PlanForm {
+  name: string;
+  price: number;
+  duration: number;
+  description: string;
+  features: string[];
+  sortOrder: number;
+  isActive: boolean;
+  isPopular: boolean;
+}
+
+export const CreatePlanModal = ({
+  open,
+  onClose,
+  data
+}: CreatePlanModalProps) => {
+  const [createPlan] = useCreatePlanMutation();
+  const [updatePlan] = useUpdatePlanMutation();
+
+  const [form, setForm] = useState<PlanForm>({
     name: "",
     price: 0,
     duration: 0,
@@ -21,20 +44,30 @@ export const CreatePlanModal = ({ open, onClose, data }: CreatePlanModalProps) =
 
   const onSubmit = async () => {
     if (data?.id) {
-      await plansApi.update(data.id, form);
+      await updatePlan({
+        id: data.id,
+        data: form
+      }).unwrap();
     } else {
-      await plansApi.create(form);
+      await createPlan(form).unwrap();
     }
+
     onClose();
-    window.location.reload();
   };
 
   if (!open) return null;
 
   return (
     <div>
-      <h2>{data ? "Update Plan" : "Add Plan"}</h2>
-      <button onClick={onSubmit}>Save</button>
+      <h2>{data ? "Update Plan" : "Create Plan"}</h2>
+
+      {/* form inputs later – abhi build fix pe focus */}
+
+      <button onClick={onSubmit}>
+        {data ? "Update" : "Create"}
+      </button>
+
+      <button onClick={onClose}>Cancel</button>
     </div>
   );
 };
