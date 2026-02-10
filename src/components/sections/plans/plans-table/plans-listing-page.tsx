@@ -24,14 +24,14 @@ export const PlansListingPage = () => {
           </tr>
         </thead>
         <tbody>
-          {data.map((plan) => (
-            <tr key={plan.id}>
-              <td>{plan.name}</td>
-              <td>{plan.amount}</td>
-              <td>{plan.description}</td>
-            </tr>
-          ))}
-        </tbody>
+  {data.map((plan) => (
+    <tr key={plan.id}>
+      <td>{plan.name}</td>
+      <td>{plan.amount}</td>
+      <td>{plan.description}</td>
+    </tr>
+  ))}
+</tbody>
       </table>
 
       <CreatePlanModal open={open} onClose={() => setOpen(false)} />

@@ -12,22 +12,18 @@ export interface PlanPayload {
   isPopular: boolean;
 }
 
-export interface PlansListResponse {
-  data: Plan[];
-}
-
 export const plansApi = commonApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPlans: builder.query<PlansListResponse, void>({
-      query: () => "/plans"
+    getPlans: builder.query<Plan[], void>({
+      query: () => "/plans",
     }),
 
     createPlan: builder.mutation<void, PlanPayload>({
       query: (body) => ({
         url: "/plans",
         method: "POST",
-        body
-      })
+        body,
+      }),
     }),
 
     updatePlan: builder.mutation<
@@ -37,22 +33,22 @@ export const plansApi = commonApi.injectEndpoints({
       query: ({ id, data }) => ({
         url: `/plans/${id}`,
         method: "PUT",
-        body: data
-      })
+        body: data,
+      }),
     }),
 
     deletePlan: builder.mutation<void, string>({
       query: (id) => ({
         url: `/plans/${id}`,
-        method: "DELETE"
-      })
-    })
-  })
+        method: "DELETE",
+      }),
+    }),
+  }),
 });
 
 export const {
   useGetPlansQuery,
   useCreatePlanMutation,
   useUpdatePlanMutation,
-  useDeletePlanMutation
+  useDeletePlanMutation,
 } = plansApi;
