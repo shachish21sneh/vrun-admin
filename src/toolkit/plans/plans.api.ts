@@ -1,5 +1,4 @@
 import { commonApi } from "../common.api";
-import type { Plan } from "@/types";
 
 export interface PlanPayload {
   name: string;
