@@ -11,10 +11,47 @@ export interface PlanPayload {
   isPopular: boolean;
 }
 
-export const plansApi = {
-  list: () => commonApi.get("/admin/plans"),
-  create: (data: PlanPayload) => commonApi.post("/admin/plans", data),
-  update: (id: string, data: PlanPayload) =>
-    commonApi.put(`/admin/plans/${id}`, data),
-  delete: (id: string) => commonApi.delete(`/admin/plans/${id}`)
-};
+export const plansApi = commonApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getPlans: builder.query<any, void>({
+      query: () => "/admin/plans",
+      providesTags: ["Plans"]
+    }),
+
+    createPlan: builder.mutation<void, PlanPayload>({
+      query: (body) => ({
+        url: "/admin/plans",
+        method: "POST",
+        body
+      }),
+      invalidatesTags: ["Plans"]
+    }),
+
+    updatePlan: builder.mutation<
+      void,
+      { id: string; data: PlanPayload }
+    >({
+      query: ({ id, data }) => ({
+        url: `/admin/plans/${id}`,
+        method: "PUT",
+        body: data
+      }),
+      invalidatesTags: ["Plans"]
+    }),
+
+    deletePlan: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/admin/plans/${id}`,
+        method: "DELETE"
+      }),
+      invalidatesTags: ["Plans"]
+    })
+  })
+});
+
+export const {
+  useGetPlansQuery,
+  useCreatePlanMutation,
+  useUpdatePlanMutation,
+  useDeletePlanMutation
+} = plansApi;
