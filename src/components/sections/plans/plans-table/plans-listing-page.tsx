@@ -20,7 +20,6 @@ export const PlansListingPage = () => {
         <button onClick={() => setOpen(true)}>+ Add New</button>
       </div>
 
-      {/* SIMPLE TABLE — SAME PATTERN AS FAQ */}
       <table className="w-full border">
         <thead>
           <tr>
