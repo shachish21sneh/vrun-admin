@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { plansApi } from "@/toolkit/plans/plans.api";
-import { CreatePlanModal } from "../views";
+import { CreatePlanModal } from "../views/CreatePlanModal";
 import { Plan } from "@/types";
 
 export const PlansListingPage = () => {
