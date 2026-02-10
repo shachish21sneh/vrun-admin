@@ -19,8 +19,7 @@ export interface PlansListResponse {
 export const plansApi = commonApi.injectEndpoints({
   endpoints: (builder) => ({
     getPlans: builder.query<PlansListResponse, void>({
-      query: () => "/admin/plans",
-      providesTags: ["Plans"]
+      query: () => "/admin/plans"
     }),
 
     createPlan: builder.mutation<void, PlanPayload>({
@@ -28,8 +27,7 @@ export const plansApi = commonApi.injectEndpoints({
         url: "/admin/plans",
         method: "POST",
         body
-      }),
-      invalidatesTags: ["Plans"]
+      })
     }),
 
     updatePlan: builder.mutation<
@@ -40,16 +38,14 @@ export const plansApi = commonApi.injectEndpoints({
         url: `/admin/plans/${id}`,
         method: "PUT",
         body: data
-      }),
-      invalidatesTags: ["Plans"]
+      })
     }),
 
     deletePlan: builder.mutation<void, string>({
       query: (id) => ({
         url: `/admin/plans/${id}`,
         method: "DELETE"
-      }),
-      invalidatesTags: ["Plans"]
+      })
     })
   })
 });
