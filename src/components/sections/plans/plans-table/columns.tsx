@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Plan } from "@/types";
+import { Plan } from "@/types/plan";
 import { CellAction } from "./cell-action";
 
 export const columns: ColumnDef<Plan>[] = [
