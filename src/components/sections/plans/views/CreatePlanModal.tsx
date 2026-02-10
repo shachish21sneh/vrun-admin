@@ -1,13 +1,25 @@
 import { useState } from "react";
-import { plansApi } from "@/toolkit/plans/plans.api";
+import { PlanPayload, plansApi } from "@/toolkit/plans/plans.api";
 
-export const CreatePlanModal = ({ open, onClose, data }: any) => {
-  const [form, setForm] = useState({
+interface CreatePlanModalProps {
+  open: boolean;
+  onClose: () => void;
+  data?: {
+    id: string;
+  };
+}
+
+export const CreatePlanModal = ({
+  open,
+  onClose,
+  data
+}: CreatePlanModalProps) => {
+  const [form, setForm] = useState<PlanPayload>({
     name: "",
-    price: "",
-    duration: "",
+    price: 0,
+    duration: 0,
     description: "",
-    features: [""],
+    features: [],
     sortOrder: 1,
     isActive: true,
     isPopular: false
@@ -26,19 +38,8 @@ export const CreatePlanModal = ({ open, onClose, data }: any) => {
   if (!open) return null;
 
   return (
-    <div className="modal">
+    <div>
       <h2>{data ? "Update Plan" : "Add Plan"}</h2>
-
-      <input placeholder="Plan Name" />
-      <input placeholder="Price" type="number" />
-      <input placeholder="Duration (months)" type="number" />
-
-      <textarea placeholder="Description" />
-
-      {form.features.map((_, i) => (
-        <input key={i} placeholder="Feature" />
-      ))}
-
       <button onClick={onSubmit}>Save</button>
     </div>
   );

@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { Plan } from "@/types/plan";
 import { plansApi } from "@/toolkit/plans/plans.api";
 
-export const CellAction = ({ data }: any) => {
-  const [loading, setLoading] = useState(false);
+interface CellActionProps {
+  data: Plan;
+}
+
+export const CellAction = ({ data }: CellActionProps) => {
+  const [loading, setLoading] = useState<boolean>(false);
 
   const onDelete = async () => {
     setLoading(true);
@@ -12,12 +17,12 @@ export const CellAction = ({ data }: any) => {
   };
 
   return (
-    <div className="relative">
+    <div>
       <button>
         <MoreHorizontal />
       </button>
 
-      <div className="absolute right-0 mt-2 bg-white shadow">
+      <div>
         <button>
           <Pencil /> Update
         </button>
