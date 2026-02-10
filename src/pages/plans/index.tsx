@@ -5,7 +5,7 @@ import { handleProtectRoute } from "@/lib/protectRoute";
 
 // Components
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { PlansListingPage } from "@/components/sections/plans/views";
+import { PlansListingPage } from "@/components/sections/plans/plans-table/plans-listing-page";
 
 export default function Page() {
   return (
