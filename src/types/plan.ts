@@ -1,12 +1,11 @@
 export interface Plan {
   id: string;
+  plan_id?: string;
   name: string;
-  price: number;
-  duration: number;
   description: string;
-  features: string[];
-  sortOrder: number;
-  isActive: boolean;
-  isPopular: boolean;
-  createdAt: string;
+  amount: number;      // ✅ THIS WAS MISSING
+  duration?: number;
+  isActive?: boolean;
+  isPopular?: boolean;
+  createdAt?: string;
 }
