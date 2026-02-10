@@ -279,7 +279,7 @@ export interface Testimonial {
   updated_at: string;
 }
 
-export interface Plans {
+export interface Plan {
   id: string;
   plan_id: string;
   name: string;
