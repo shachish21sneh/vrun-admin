@@ -8,6 +8,9 @@ export const PlansListingPage = () => {
   const [open, setOpen] = useState(false);
 
   const plans: Plan[] = data?.data ?? [];
+  
+  const result = useGetPlansQuery();
+console.log("PLANS RESULT:", result);
 
   if (isLoading) return <div>Loading...</div>;
 

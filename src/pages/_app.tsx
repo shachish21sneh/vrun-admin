@@ -10,13 +10,20 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// 🔥 VERY IMPORTANT (THIS WAS MISSING)
+import "@/toolkit/plans/plans.api";
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <NextTopLoader showSpinner={false} />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar
+          />
           <Component {...pageProps} />
         </ThemeProvider>
       </PersistGate>
