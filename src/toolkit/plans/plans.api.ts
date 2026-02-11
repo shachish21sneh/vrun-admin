@@ -18,16 +18,18 @@ export interface PlanPayload {
 export const plansApi = commonApi.injectEndpoints({
   endpoints: (builder) => ({
     getPlans: builder.query<Plan[], void>({
-      query: () => "/plans",
-    }),
+  query: () => "/plans",
+  providesTags: ["Plans"],
+}),
 
     createPlan: builder.mutation<void, PlanPayload>({
-      query: (body) => ({
-        url: "/plans",
-        method: "POST",
-        body,
-      }),
-    }),
+  query: (body) => ({
+    url: "/plans",
+    method: "POST",
+    body,
+  }),
+  invalidatesTags: ["Plans"],
+}),
 
     updatePlan: builder.mutation<
       void,
