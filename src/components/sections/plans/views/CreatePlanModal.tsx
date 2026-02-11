@@ -36,7 +36,7 @@ export const CreatePlanModal = ({
 
   // 👇 setForm hata diya
   const [form] = useState<PlanForm>({
-	plan_id: "",
+  plan_id: "",
   name: "",
   description: "",
   amount: 0,
@@ -52,11 +52,17 @@ export const CreatePlanModal = ({
   const onSubmit = async () => {
     if (data?.id) {
       await updatePlan({
-        id: data.id,
-        data: form
-      }).unwrap();
+  id: data.id,
+  data: {
+    ...form,
+    features: JSON.stringify(form.features),
+  },
+}).unwrap();
     } else {
-      await createPlan(form).unwrap();
+      await createPlan({
+  ...form,
+  features: JSON.stringify(form.features),
+}).unwrap();
     }
 
     onClose();
