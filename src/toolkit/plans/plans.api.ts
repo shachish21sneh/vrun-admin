@@ -22,6 +22,7 @@ export const plansApi = commonApi.injectEndpoints({
   providesTags: ["Plans"],
 }),
 
+
     createPlan: builder.mutation<void, PlanPayload>({
   query: (body) => ({
     url: "/plans",
