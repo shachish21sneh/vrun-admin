@@ -3,16 +3,8 @@ import type { Plan } from "@/types";
 
 export const columns: ColumnDef<Plan>[] = [
   {
-    accessorKey: "plan_id",
-    header: "Plan Id",
-  },
-  {
     accessorKey: "name",
     header: "Name",
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
   },
   {
     accessorKey: "amount",
@@ -21,10 +13,6 @@ export const columns: ColumnDef<Plan>[] = [
   {
     accessorKey: "status",
     header: "Status",
-  },
-  {
-    accessorKey: "currency",
-    header: "Currency",
   },
   {
     accessorKey: "features",
@@ -41,9 +29,5 @@ export const columns: ColumnDef<Plan>[] = [
   {
     accessorKey: "status",
     header: "Status",
-  },
-  {
-    accessorKey: "created_at",
-    header: "Created At",
-  },
+  }
 ];
