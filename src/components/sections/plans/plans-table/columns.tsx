@@ -8,21 +8,23 @@ export const columns: ColumnDef<Plan>[] = [
     header: "Plan Name"
   },
   {
-    accessorKey: "price",
-    header: "Price"
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ row }) =>
+      `${row.original.currency} ${row.original.amount}`,
   },
   {
-    accessorKey: "duration",
-    header: "Duration (Months)"
+    accessorKey: "description",
+    header: "Description",
   },
   {
-    accessorKey: "sortOrder",
-    header: "Sort Order"
+    accessorKey: "features",
+    header: "Features"
   },
   {
-    accessorKey: "isActive",
-    header: "Active",
-    cell: ({ row }) => (row.original.isActive ? "Yes" : "No")
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (row.original.status ? "active" : "inactive")
   },
   {
     accessorKey: "createdAt",

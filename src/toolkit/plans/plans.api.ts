@@ -2,14 +2,17 @@ import { commonApi } from "../common.api";
 import type { Plan } from "@/types";
 
 export interface PlanPayload {
+  plan_id: string;
   name: string;
-  price: number;
-  duration: number;
   description: string;
-  features: string[];
-  sortOrder: number;
-  isActive: boolean;
-  isPopular: boolean;
+  amount: number;
+  currency: string;
+  features: string;
+  trial_period_days: string | null;
+  status: string;
+  sunroof_type: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const plansApi = commonApi.injectEndpoints({

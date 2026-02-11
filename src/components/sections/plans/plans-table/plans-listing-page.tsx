@@ -35,11 +35,11 @@ export const PlansListingPage = () => {
   };
 
   const filteredData = useMemo(() => {
-    if (!isSuccess || !plansData) return [];
-    return plansData.filter((plan: any) =>
-      plan.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-    );
-  }, [debouncedSearchQuery, plansData, isSuccess]);
+  if (!isSuccess) return [];
+  return plansData.filter((plan: Plan) =>
+    plan.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+  );
+}, [debouncedSearchQuery, plansData, isSuccess]);
 
   const paginatedData = useMemo(() => {
     const start = pageIndex * pageSize;

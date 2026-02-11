@@ -13,14 +13,17 @@ interface CreatePlanModalProps {
 }
 
 interface PlanForm {
+  plan_id: string;
   name: string;
-  price: number;
-  duration: number;
   description: string;
+  amount: number;
+  currency: string;
   features: string[];
-  sortOrder: number;
-  isActive: boolean;
-  isPopular: boolean;
+  trial_period_days: string | null;
+  status: string;
+  sunroof_type: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const CreatePlanModal = ({
@@ -33,14 +36,17 @@ export const CreatePlanModal = ({
 
   // 👇 setForm hata diya
   const [form] = useState<PlanForm>({
-    name: "",
-    price: 0,
-    duration: 0,
-    description: "",
-    features: [],
-    sortOrder: 1,
-    isActive: true,
-    isPopular: false
+	plan_id: "",
+  name: "",
+  description: "",
+  amount: number,
+  currency: "",
+  features:[],
+  trial_period_days:"",
+  status:"",
+  sunroof_type: "",
+  created_at: "",
+  updated_at: "",
   });
 
   const onSubmit = async () => {
