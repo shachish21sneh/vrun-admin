@@ -39,7 +39,7 @@ export const CreatePlanModal = ({
 	plan_id: "",
   name: "",
   description: "",
-  amount: number,
+  amount: 0,
   currency: "",
   features:[],
   trial_period_days:"",
