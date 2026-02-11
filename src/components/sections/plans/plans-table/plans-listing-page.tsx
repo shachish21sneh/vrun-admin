@@ -14,13 +14,7 @@ import { columns } from "./columns";
 import { CreatePlanModal } from "../views/CreatePlanModal";
 
 export const PlansListingPage = () => {
-  const {
-    data: plansData = [],
-    isLoading,
-    isError,
-    isSuccess,
-    refetch,
-  } = useGetPlansQuery();
+  const { data, isLoading, isError, isSuccess } = useGetPlansQuery();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -84,10 +78,9 @@ export const PlansListingPage = () => {
       </div>
 
       <CreatePlanModal
-        open={open}
-        onClose={() => setOpen(false)}
-        refetch={refetch}
-      />
+  open={open}
+  onClose={() => setOpen(false)}
+/>
     </PageContainer>
   );
 };
