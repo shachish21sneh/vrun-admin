@@ -11,16 +11,8 @@ export const columns: ColumnDef<Plan>[] = [
     header: "Amount",
   },
   {
-    accessorKey: "status",
-    header: "Status",
-  },
-  {
     accessorKey: "features",
     header: "Features",
-  },
-  {
-    accessorKey: "trial_period_days",
-    header: "Duration",
   },
   {
     accessorKey: "sunroof_type",
