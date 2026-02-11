@@ -12,6 +12,7 @@ import { PaginationState } from "@tanstack/react-table";
 import { useGetPlansQuery } from "@/toolkit/plans/plans.api";
 import { columns } from "./columns";
 import { CreatePlanModal } from "../views/CreatePlanModal";
+import type { Plan } from "@/types";
 
 export const PlansListingPage = () => {
   const { data: plansData, isLoading, isError, isSuccess, refetch } =
@@ -33,13 +34,6 @@ export const PlansListingPage = () => {
     setPageIndex(pageIndex);
     setPageSize(pageSize);
   };
-
-  const filteredData = useMemo(() => {
-  if (!isSuccess) return [];
-  return plansData.filter((plan: Plan) =>
-    plan.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-  );
-}, [debouncedSearchQuery, plansData, isSuccess]);
 
   const paginatedData = useMemo(() => {
     const start = pageIndex * pageSize;
