@@ -12,33 +12,39 @@ import { PaginationState } from "@tanstack/react-table";
 import { useGetPlansQuery } from "@/toolkit/plans/plans.api";
 import { columns } from "./columns";
 import { CreatePlanModal } from "../views/CreatePlanModal";
-import type { Plan } from "@/types";
 
 export const PlansListingPage = () => {
-  const { data: plansData, isLoading, isError, isSuccess, refetch } =
-    useGetPlansQuery();
+  const {
+    data: plansData = [],
+    isLoading,
+    isError,
+    isSuccess,
+    refetch,
+  } = useGetPlansQuery();
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [pageIndex, setPageIndex] = useState<number>(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [pageIndex, setPageIndex] = useState(0);
   const [open, setOpen] = useState(false);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value.trim());
-    setPageIndex(0);
-  };
 
   const handlePaginationChange = ({ pageIndex, pageSize }: PaginationState) => {
     setPageIndex(pageIndex);
     setPageSize(pageSize);
   };
 
+  const filteredData = useMemo(() => {
+    if (!isSuccess) return [];
+
+    return plansData.filter((plan) =>
+      plan.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+    );
+  }, [plansData, debouncedSearchQuery, isSuccess]);
+
   const paginatedData = useMemo(() => {
     const start = pageIndex * pageSize;
-    const end = start + pageSize;
-    return filteredData.slice(start, end);
+    return filteredData.slice(start, start + pageSize);
   }, [filteredData, pageIndex, pageSize]);
 
   return (
@@ -49,7 +55,6 @@ export const PlansListingPage = () => {
             title={`Plans (${filteredData.length})`}
             description="Manage subscription plans"
           />
-
           <Button onClick={() => setOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> Add New
           </Button>
@@ -57,29 +62,24 @@ export const PlansListingPage = () => {
 
         <div className="flex justify-end">
           <div className="w-1/3">
-            <SearchInput onSearchChange={handleSearchChange} />
+            <SearchInput onSearchChange={setSearchQuery} />
           </div>
         </div>
 
         <Separator />
 
-        {isLoading && <DataTableSkeleton columnCount={3} rowCount={10} />}
-        {isError && <p>Failed to load plans. Please try again later.</p>}
-        {isSuccess && filteredData.length === 0 && (
-          <p>No plans found matching your search criteria.</p>
-        )}
+        {isLoading && <DataTableSkeleton columnCount={4} rowCount={10} />}
+        {isError && <p>Failed to load plans.</p>}
 
         {isSuccess && filteredData.length > 0 && (
-          <div className="space-y-4">
-            <DataTable
-              columns={columns}
-              data={paginatedData}
-              totalItems={filteredData.length}
-              pageSize={pageSize}
-              pageIndex={pageIndex}
-              onPaginationChange={handlePaginationChange}
-            />
-          </div>
+          <DataTable
+            columns={columns}
+            data={paginatedData}
+            totalItems={filteredData.length}
+            pageSize={pageSize}
+            pageIndex={pageIndex}
+            onPaginationChange={handlePaginationChange}
+          />
         )}
       </div>
 
