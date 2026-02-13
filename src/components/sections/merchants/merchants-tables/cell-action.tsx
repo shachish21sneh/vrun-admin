@@ -41,8 +41,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
       setOpen(false);
     } catch (error) {
-      toast.error("Failed to update merchant status");
-    }
+  console.error("Status update failed:", error);
+  toast.error("Failed to update merchant status");
+}
   };
 
   return (
