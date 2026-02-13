@@ -44,27 +44,33 @@ export const CreatePlanModal = ({
   });
 
   useEffect(() => {
-    if (plan) {
-      setForm({
-        ...plan,
-        features: Array.isArray(plan.features)
-          ? plan.features.join(", ")
-          : "",
-        amount: String(plan.amount),
-      });
-    } else {
-      setForm({
-        name: "",
-        description: "",
-        amount: "",
-        currency: "INR",
-        features: "",
-        status: "active",
-        sunroof_type: "",
-        trial_period_days: "",
-      });
-    }
-  }, [plan]);
+  if (plan) {
+    setForm({
+      name: plan.name ?? "",
+      description: plan.description ?? "",
+      amount: plan.amount ? String(plan.amount) : "",
+      currency: plan.currency ?? "INR",
+      features: Array.isArray(plan.features)
+        ? plan.features.join(", ")
+        : "",
+      status: plan.status ?? "active",
+      sunroof_type: plan.sunroof_type ?? "",
+      trial_period_days:
+        plan.trial_period_days ?? "",
+    });
+  } else {
+    setForm({
+      name: "",
+      description: "",
+      amount: "",
+      currency: "INR",
+      features: "",
+      status: "active",
+      sunroof_type: "",
+      trial_period_days: "",
+    });
+  }
+}, [plan]);
 
   const handleChange = (
     key: keyof typeof form,
