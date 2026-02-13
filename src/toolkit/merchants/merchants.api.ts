@@ -34,13 +34,14 @@ interface CREATE_MERCHANT_PAYLOAD {
 export const merchantsApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
     getAllMerchants: build.query<GET_MERCHANT_RESPONSE, void>({
-      query: () => ({
-        url: `merchant`,
-      }),
-      transformErrorResponse: (response) => {
-        return (response?.data as unknown as ErrorResponse)?.error;
-      },
-    }),
+  query: () => ({
+    url: `merchant`,
+  }),
+  providesTags: ["Merchants"],   // 👈 ADD THIS
+  transformErrorResponse: (response) => {
+    return (response?.data as unknown as ErrorResponse)?.error;
+  },
+}),
     createMerchants: build.mutation<
       CREATE_MERCHANT_RESPONSE,
       CREATE_MERCHANT_PAYLOAD
@@ -62,6 +63,27 @@ export const merchantsApi = commonApi.injectEndpoints({
         return (response?.data as unknown as ErrorResponse)?.error;
       },
     }),
+	
+	updateMerchantStatus: build.mutation<
+  { message: string },
+  { id: string; active: boolean }
+>({
+  query: ({ id, active }) => ({
+    url: `merchant/${id}/status`,
+    method: "PATCH",
+    body: { active },
+  }),
+  invalidatesTags: ["Merchants"],  // 👈 IMPORTANT
+}),
+	
   }),
   overrideExisting: true,
 });
+
+
+export const {
+  useGetAllMerchantsQuery,
+  useCreateMerchantsMutation,
+  useGetMerchantDetailsQuery,
+  useUpdateMerchantStatusMutation,   // 👈 ADD THIS
+} = merchantsApi;

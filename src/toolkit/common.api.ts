@@ -26,7 +26,7 @@ export const commonApi = createApi({
   return headers;
 },
   }),
-  tagTypes: ["User", "Datasets", "Tasks", "Models", "Plans"],
+  tagTypes: ["User", "Datasets", "Tasks", "Models", "Plans", "Merchants"],
   endpoints: () => ({}),
 });
 
