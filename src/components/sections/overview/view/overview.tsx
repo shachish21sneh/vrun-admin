@@ -267,6 +267,13 @@ export default function OverViewPage() {
                 <PieGraph period="1y" />
               </div>
             </div>
+			{/* Users Car Section */}
+			<div className="mt-6 space-y-4">
+				<h3 className="text-lg font-semibold">Users Car List</h3>
+				<div className="grid gap-4">
+					<RecentUserCars />
+				</div>
+			</div>
             {/* Subscription Section */}
             <div className="mt-6 space-y-4">
               <h3 className="text-lg font-semibold">Subscription Management</h3>
@@ -275,15 +282,6 @@ export default function OverViewPage() {
                 <RecentSubscriptions period={period} />
               </div>
             </div>
-			
-			{/* Users Car Section */}
-			<div className="mt-6 space-y-4">
-				<h3 className="text-lg font-semibold">Users Car List</h3>
-				<div className="grid gap-4">
-					<RecentUserCars />
-				</div>
-			</div>
-
             {/* Ticket Insights Section */}
             <div className="mt-6 space-y-4">
               <h3 className="text-lg font-semibold">Ticket Insights</h3>

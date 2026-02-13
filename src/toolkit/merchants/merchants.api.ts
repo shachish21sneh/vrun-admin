@@ -35,7 +35,7 @@ export const merchantsApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
     getAllMerchants: build.query<GET_MERCHANT_RESPONSE, void>({
       query: () => ({
-        url: `merchant`,
+        url: `api/merchant`,
       }),
       transformErrorResponse: (response) => {
         return (response?.data as unknown as ErrorResponse)?.error;
@@ -46,7 +46,7 @@ export const merchantsApi = commonApi.injectEndpoints({
       CREATE_MERCHANT_PAYLOAD
     >({
       query: (body) => ({
-        url: `merchant`,
+        url: `api/merchant`,
         method: "POST",
         body,
       }),
@@ -56,7 +56,7 @@ export const merchantsApi = commonApi.injectEndpoints({
     }),
     getMerchantDetails: build.query<Merchant, { id: string }>({
       query: (body) => ({
-        url: `merchant/${body.id}`,
+        url: `api/merchant/${body.id}`,
       }),
       transformErrorResponse: (response) => {
         return (response?.data as unknown as ErrorResponse)?.error;

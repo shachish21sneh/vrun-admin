@@ -125,7 +125,7 @@ export const CreatePlanModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="w-full lg:max-w-[50%] rounded-xl">
         <DialogHeader>
           <DialogTitle>
             {plan ? "Update Plan" : "Create Plan"}
