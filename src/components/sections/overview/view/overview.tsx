@@ -275,13 +275,13 @@ export default function OverViewPage() {
 				</div>
 			</div>
             {/* Subscription Section */}
-            <div className="mt-6 space-y-4">
+            {/*<div className="mt-6 space-y-4">
               <h3 className="text-lg font-semibold">Subscription Management</h3>
               <div className="grid gap-4">
                 <SubscriptionStats period={period} />
                 <RecentSubscriptions period={period} />
               </div>
-            </div>
+            </div> */}
             {/* Ticket Insights Section */}
             <div className="mt-6 space-y-4">
               <h3 className="text-lg font-semibold">Ticket Insights</h3>
