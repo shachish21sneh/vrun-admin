@@ -31,16 +31,16 @@ export const plansApi = commonApi.injectEndpoints({
     }),
 
     updatePlan: builder.mutation<
-      void,
-      { id: string; data: PlanPayload }
-    >({
-      query: ({ id, data }) => ({
-        url: `/plans/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: ["Plans"],
-    }),
+  void,
+  { id: string; data: PlanPayload }
+>({
+  query: ({ id, data }) => ({
+    url: `/plans/${id}`,
+    method: "PATCH", // ✅ FIXED
+    body: data,
+  }),
+  invalidatesTags: ["Plans"],
+}),
 
     deletePlan: builder.mutation<void, string>({
       query: (id) => ({
