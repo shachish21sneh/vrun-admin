@@ -7,21 +7,13 @@ export interface PlanPayload {
   description: string;
   amount: number;
   currency: string;
-  features: string[]; // ✅ FIXED
+  features: string[];
   trial_period_days: string | null;
   status: string;
   sunroof_type: string;
 }
 
 export const plansApi = commonApi.injectEndpoints({
-  endpoints: (builder) => ({
-    getPlans: builder.query<Plan[], void>({
-  query: () => "/plans",
-  providesTags: ["Plans"],
-}),
-
-
-    export const plansApi = commonApi.injectEndpoints({
   endpoints: (builder) => ({
 
     getPlans: builder.query<Plan[], void>({
@@ -57,10 +49,6 @@ export const plansApi = commonApi.injectEndpoints({
       }),
       invalidatesTags: ["Plans"],
     }),
-
-  }),
-});
-
 
   }),
 });
