@@ -1,95 +1,130 @@
+'use client';
+
 import { useGetUsersCarsQuery } from "@/toolkit/dashboard/dashboard.api";
 import type { UserCar } from "@/toolkit/dashboard/dashboard.api";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export function RecentUserCars() {
   const { data, isLoading } = useGetUsersCarsQuery();
 
-const cars: UserCar[] = (data?.data ?? []).slice(0, 10);
+  const cars: UserCar[] = (data?.data ?? []).slice(0, 10);
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
-        <Skeleton className="h-14 w-full" />
-        <Skeleton className="h-14 w-full" />
-        <Skeleton className="h-14 w-full" />
-      </div>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-40" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[300px] w-full" />
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="rounded-lg border">
-      <div className="p-4 font-medium">Recently Added Cars</div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Recently Added Cars</CardTitle>
+      </CardHeader>
 
-      <div className="divide-y rounded-lg border">
-  {cars.map((car) => (
-    <div key={car.id} className="p-4 space-y-2">
-      {/* ROW 1 */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium">
-          Registration No:{" "}
-          <span className="font-mono">
-            {car.registration_number}
-          </span>
-        </p>
+      <CardContent>
+        <div className="w-full overflow-auto max-h-[400px] border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="sticky left-0 bg-background min-w-[160px]">
+                  Registration
+                </TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Plan</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Period</TableHead>
+                <TableHead>Order ID</TableHead>
+                <TableHead>Payment ID</TableHead>
+                <TableHead>Created At</TableHead>
+              </TableRow>
+            </TableHeader>
 
-        <span
-          className={`rounded px-2 py-0.5 text-xs ${
-            car.plan_status === "active"
-              ? "bg-green-100 text-green-700"
-              : "bg-gray-100 text-gray-500"
-          }`}
-        >
-          {car.plan_status ?? "No Plan"}
-        </span>
-      </div>
+            <TableBody>
+              {cars.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    No cars available
+                  </TableCell>
+                </TableRow>
+              ) : (
+                cars.map((car) => (
+                  <TableRow key={car.id}>
+                    <TableCell className="sticky left-0 bg-background font-mono">
+                      {car.registration_number}
+                    </TableCell>
 
-      {/* ROW 2 */}
-      <div className="text-sm text-muted-foreground">
-        Registration Year: {car.registration_year}
-      </div>
+                    <TableCell>
+                      <span
+                        className={`rounded px-2 py-0.5 text-xs ${
+                          car.plan_status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-100 text-gray-500"
+                        }`}
+                      >
+                        {car.plan_status ?? "No Plan"}
+                      </span>
+                    </TableCell>
 
-      {/* ROW 3 */}
-      <div className="text-sm">
-        Plan:{" "}
-        <span className="font-medium">
-          {car.plan_name ?? "—"}
-        </span>
-      </div>
+                    <TableCell>
+                      {car.plan_name ?? "—"}
+                    </TableCell>
 
-      {/* ROW 4 */}
-      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-        <div>Order ID: {car.order_id ?? "—"}</div>
-        <div>Payment ID: {car.razorpay_payment_id ?? "—"}</div>
-        <div>
-          Amount: {car.amount ? `₹${car.amount}` : "—"}
+                    <TableCell>
+                      {car.amount ? `₹${car.amount}` : "—"}
+                    </TableCell>
+
+                    <TableCell className="text-xs">
+                      {car.plan_start
+                        ? `${new Date(
+                            car.plan_start
+                          ).toLocaleDateString()} → ${new Date(
+                            car.plan_end!
+                          ).toLocaleDateString()}`
+                        : "—"}
+                    </TableCell>
+
+                    <TableCell className="text-xs font-mono">
+                      {car.order_id ?? "—"}
+                    </TableCell>
+
+                    <TableCell className="text-xs font-mono">
+                      {car.razorpay_payment_id ?? "—"}
+                    </TableCell>
+
+                    <TableCell className="text-xs">
+                      {new Date(car.created_at).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
-        <div>
-          Period:{" "}
-          {car.plan_start
-            ? `${new Date(
-                car.plan_start,
-              ).toLocaleDateString()} → ${new Date(
-                car.plan_end!,
-              ).toLocaleDateString()}`
-            : "—"}
-        </div>
-      </div>
-
-      {/* ROW 5 */}
-      <div className="text-xs text-muted-foreground">
-        Created At:{" "}
-        {new Date(car.created_at).toLocaleString()}
-      </div>
-
-      {!car.active && (
-        <div className="text-xs text-red-600">
-          Inactive Car
-        </div>
-      )}
-    </div>
-  ))}
-</div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
