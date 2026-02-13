@@ -8,7 +8,7 @@ export interface PlanPayload {
   amount: number;
   currency: string;
   features: string[];
-  trial_period_days: string | null;
+  trial_period_days: number;
   status: string;
   sunroof_type: string;
 }
