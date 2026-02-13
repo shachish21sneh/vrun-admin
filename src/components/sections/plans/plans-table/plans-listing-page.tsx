@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useMemo } from "react";
 import PageContainer from "@/components/layout/page-container";
 import { Button } from "@/components/ui/button";
@@ -7,14 +9,24 @@ import { Plus } from "lucide-react";
 import { DataTable } from "@/components/ui/table/data-table";
 import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
 import { PaginationState } from "@tanstack/react-table";
-import { useGetPlansQuery } from "@/toolkit/plans/plans.api";
+
+import {
+  useGetPlansQuery,
+  useDeletePlanMutation,
+} from "@/toolkit/plans/plans.api";
+
 import { columns } from "./columns";
 import { CreatePlanModal } from "../views/CreatePlanModal";
 
 export const PlansListingPage = () => {
-  const { data: plansData = [], isLoading, isError } = useGetPlansQuery();
+  const { data: plansData = [], isLoading, isError } =
+    useGetPlansQuery();
+
+  const [deletePlan] = useDeletePlanMutation();
 
   const [open, setOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -31,6 +43,20 @@ export const PlansListingPage = () => {
     return plansData.slice(start, start + pageSize);
   }, [plansData, pageIndex, pageSize]);
 
+  const handleAdd = () => {
+    setSelectedPlan(null);
+    setOpen(true);
+  };
+
+  const handleEdit = (plan: any) => {
+    setSelectedPlan(plan);
+    setOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    await deletePlan(id);
+  };
+
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
@@ -40,19 +66,25 @@ export const PlansListingPage = () => {
             description="Manage subscription plans"
           />
 
-          <Button onClick={() => setOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" /> Add New
+          <Button onClick={handleAdd}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add New
           </Button>
         </div>
 
         <Separator />
 
-        {isLoading && <DataTableSkeleton columnCount={4} rowCount={10} />}
-        {isError && <p>Failed to load plans.</p>}
+        {isLoading && (
+          <DataTableSkeleton columnCount={5} rowCount={10} />
+        )}
+
+        {isError && (
+          <p className="text-red-500">Failed to load plans.</p>
+        )}
 
         {!isLoading && !isError && (
           <DataTable
-            columns={columns}
+            columns={columns(handleEdit, handleDelete)}
             data={paginatedData}
             totalItems={plansData.length}
             pageSize={pageSize}
@@ -65,6 +97,7 @@ export const PlansListingPage = () => {
       <CreatePlanModal
         open={open}
         onClose={() => setOpen(false)}
+        plan={selectedPlan}
       />
     </PageContainer>
   );

@@ -2,17 +2,15 @@ import { commonApi } from "../common.api";
 import type { Plan } from "@/types";
 
 export interface PlanPayload {
-  plan_id: string;
+  plan_id?: string;
   name: string;
   description: string;
   amount: number;
   currency: string;
-  features: string;
+  features: string[]; // ✅ FIXED
   trial_period_days: string | null;
   status: string;
   sunroof_type: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export const plansApi = commonApi.injectEndpoints({
@@ -32,23 +30,27 @@ export const plansApi = commonApi.injectEndpoints({
   invalidatesTags: ["Plans"],
 }),
 
-    updatePlan: builder.mutation<
-      void,
-      { id: string; data: PlanPayload }
-    >({
-      query: ({ id, data }) => ({
-        url: `/plans/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-    }),
+  updatePlan: builder.mutation<
+  void,
+  { id: string; data: PlanPayload }
+>({
+  query: ({ id, data }) => ({
+    url: `/plans/${id}`,
+    method: "PUT",
+    body: data,
+  }),
+  invalidatesTags: ["Plans"], // ✅ add this
+}),
 
-    deletePlan: builder.mutation<void, string>({
-      query: (id) => ({
-        url: `/plans/${id}`,
-        method: "DELETE",
-      }),
-    }),
+deletePlan: builder.mutation<void, string>({
+  query: (id) => ({
+    url: `/plans/${id}`,
+    method: "DELETE",
+  }),
+  invalidatesTags: ["Plans"], // ✅ add this
+}),
+
+
   }),
 });
 
