@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   useCreatePlanMutation,
@@ -80,28 +81,39 @@ export const CreatePlanModal = ({
   };
 
   const handleSubmit = async () => {
-    const featuresArray = form.features
-      .split(",")
-      .map((f) => f.trim())
-      .filter((f) => f.length > 0);
+  const featuresArray = form.features
+    .split(",")
+    .map((f) => f.trim())
+    .filter((f) => f.length > 0);
 
-    const payload = {
-      ...form,
-      amount: Number(form.amount),
-      features: featuresArray,
-    };
+  const payload = {
+    name: form.name,
+    description: form.description,
+    amount: Number(form.amount),
+    currency: form.currency,
+    features: featuresArray,
+    status: form.status,
+    sunroof_type: form.sunroof_type,
+    trial_period_days: form.trial_period_days || null,
+  };
 
+  try {
     if (plan) {
-      await updatePlan({
+      const res = await updatePlan({
         id: plan.plan_id,
         data: payload,
-      });
+      }).unwrap();
+      console.log("Update success:", res);
     } else {
-      await createPlan(payload);
+      const res = await createPlan(payload).unwrap();
+      console.log("Create success:", res);
     }
 
     onClose();
-  };
+  } catch (err) {
+    console.error("Mutation error:", err);
+  }
+};
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -138,13 +150,16 @@ export const CreatePlanModal = ({
             }
           />
 
-          <Input
-            placeholder="Features (comma separated)"
-            value={form.features}
-            onChange={(e) =>
-              handleChange("features", e.target.value)
-            }
-          />
+          <Textarea
+  placeholder="Enter features separated by comma
+Example:
+Water leak testing, Technical support included"
+  value={form.features}
+  onChange={(e) =>
+    handleChange("features", e.target.value)
+  }
+  rows={4}
+/>
         </div>
 
         <DialogFooter className="mt-4">
