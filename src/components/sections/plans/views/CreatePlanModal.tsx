@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   useCreatePlanMutation,
@@ -138,13 +139,16 @@ export const CreatePlanModal = ({
             }
           />
 
-          <Input
-            placeholder="Features (comma separated)"
-            value={form.features}
-            onChange={(e) =>
-              handleChange("features", e.target.value)
-            }
-          />
+          <Textarea
+  placeholder="Enter features separated by comma
+Example:
+Water leak testing, Technical support included"
+  value={form.features}
+  onChange={(e) =>
+    handleChange("features", e.target.value)
+  }
+  rows={4}
+/>
         </div>
 
         <DialogFooter className="mt-4">
