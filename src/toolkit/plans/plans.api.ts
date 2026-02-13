@@ -36,7 +36,7 @@ export const plansApi = commonApi.injectEndpoints({
 >({
   query: ({ id, data }) => ({
     url: `/plans/${id}`,
-    method: "PATCH", // ✅ FIXED
+    method: "PATCH",
     body: data,
   }),
   invalidatesTags: ["Plans"],

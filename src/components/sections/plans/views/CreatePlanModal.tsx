@@ -99,7 +99,7 @@ export const CreatePlanModal = ({
   features: featuresArray,
   status: form.status,
   sunroof_type: form.sunroof_type,
-  trial_period_days: "365",
+  trial_period_days: 365,
 };
 
   try {
