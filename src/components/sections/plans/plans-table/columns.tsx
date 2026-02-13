@@ -51,7 +51,7 @@ export const columns = (
           <Button
             size="sm"
             variant="destructive"
-            onClick={() => onDelete(plan.plan_id)}
+            onClick={() => onDelete(plan.id)}
           >
             Delete
           </Button>

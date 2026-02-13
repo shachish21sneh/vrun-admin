@@ -100,7 +100,7 @@ export const CreatePlanModal = ({
   try {
     if (plan) {
       const res = await updatePlan({
-        id: plan.plan_id,
+        id: plan.id,
         data: payload,
       }).unwrap();
       console.log("Update success:", res);
