@@ -63,7 +63,10 @@ export const CreatePlanModal = ({
         ? plan.features.join(", ")
         : "",
       status: plan.status ?? "active",
-      sunroof_type: plan.sunroof_type ?? "",
+      sunroof_type:
+  plan?.sunroof_type
+    ? String(plan.sunroof_type)
+    : "",
     });
   } else {
     setForm({
@@ -156,12 +159,12 @@ export const CreatePlanModal = ({
           />
 		  
 		  <Select
-  value={form.sunroof_type}
+  value={form.sunroof_type ?? ""}
   onValueChange={(value) =>
     handleChange("sunroof_type", value)
   }
 >
-  <SelectTrigger>
+  <SelectTrigger className="w-full">
     <SelectValue placeholder="Select Sunroof Type" />
   </SelectTrigger>
   <SelectContent>
