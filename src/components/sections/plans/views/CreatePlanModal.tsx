@@ -16,11 +16,19 @@ import {
   useUpdatePlanMutation,
 } from "@/toolkit/plans/plans.api";
 
+import type { Plan } from "@/types";
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  plan: Plan | null;
+}
+
 export const CreatePlanModal = ({
   open,
   onClose,
   plan,
-}: any) => {
+}: Props) => {
   const [createPlan] = useCreatePlanMutation();
   const [updatePlan] = useUpdatePlanMutation();
 
@@ -39,7 +47,10 @@ export const CreatePlanModal = ({
     if (plan) {
       setForm({
         ...plan,
-        features: plan.features?.join(", ") || "",
+        features: Array.isArray(plan.features)
+          ? plan.features.join(", ")
+          : "",
+        amount: String(plan.amount),
       });
     } else {
       setForm({
@@ -55,7 +66,10 @@ export const CreatePlanModal = ({
     }
   }, [plan]);
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (
+    key: keyof typeof form,
+    value: string
+  ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 

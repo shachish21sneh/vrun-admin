@@ -1,10 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
+import type { Plan } from "@/types";
 
 export const columns = (
-  onEdit: (plan: any) => void,
+  onEdit: (plan: Plan) => void,
   onDelete: (id: string) => void
-): ColumnDef<any>[] => [
+): ColumnDef<Plan>[] => [
   {
     accessorKey: "name",
     header: "Name",

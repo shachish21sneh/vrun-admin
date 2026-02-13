@@ -17,6 +17,7 @@ import {
 
 import { columns } from "./columns";
 import { CreatePlanModal } from "../views/CreatePlanModal";
+import type { Plan } from "@/types";
 
 export const PlansListingPage = () => {
   const { data: plansData = [], isLoading, isError } =
@@ -25,7 +26,7 @@ export const PlansListingPage = () => {
   const [deletePlan] = useDeletePlanMutation();
 
   const [open, setOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
 
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
@@ -48,7 +49,7 @@ export const PlansListingPage = () => {
     setOpen(true);
   };
 
-  const handleEdit = (plan: any) => {
+  const handleEdit = (plan: Plan) => {
     setSelectedPlan(plan);
     setOpen(true);
   };
