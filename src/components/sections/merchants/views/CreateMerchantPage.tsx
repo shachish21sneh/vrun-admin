@@ -174,26 +174,45 @@ const CreateMerchantPage: React.FC = () => {
   };
 
   const onSubmit = async (formData: FormValues) => {
-    setLoading(true);
-    try {
-      let imageUrl = null;
-      if (formData.image_url?.[0]) {
-        imageUrl = await handleFileUpload(formData.image_url[0]);
-      }
-      await createMerchant({
-        ...formData,
-        image_url: imageUrl,
-        contact_persons: formData.contact_persons || [],
-      });
-      toast.success("Merchant created successfully!");
-      router.push("/merchant");
-    } catch (error) {
-      toast.error("Failed to submit the form.");
-      console.error("Submission Error:", error);
-    } finally {
-      setLoading(false);
+  setLoading(true);
+
+  try {
+    let imageUrl = null;
+
+    if (formData.image_url?.[0]) {
+      imageUrl = await handleFileUpload(formData.image_url[0]);
     }
-  };
+
+    await createMerchant({
+      ...formData,
+      image_url: imageUrl,
+      contact_persons: formData.contact_persons || [],
+    }).unwrap(); // 🔥 IMPORTANT
+
+    toast.success("Merchant created successfully!");
+
+    router.push("/merchant"); // ✅ Only runs if success
+
+  } catch (error: any) {
+    console.error("Submission Error:", error);
+
+    const message =
+      error?.data?.message ||
+      error?.data?.error ||
+      "Mobile number already exists";
+
+    // 🔥 Show error under phone field
+    form.setError("business_phone", {
+      type: "manual",
+      message,
+    });
+
+    toast.error(message);
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handlePlaceSelected = (place: any) => {
     const address = place?.formatted_address;
