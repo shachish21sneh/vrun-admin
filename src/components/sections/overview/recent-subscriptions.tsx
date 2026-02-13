@@ -1,6 +1,6 @@
 'use client';
 
-import { Mail, Phone, Calendar, CreditCard, Clock } from 'lucide-react';
+import { Phone, Clock } from 'lucide-react';
 import { useGetSubscriptionsQuery } from '@/toolkit/dashboard/dashboard.api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
