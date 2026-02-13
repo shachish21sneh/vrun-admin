@@ -213,6 +213,7 @@ const CreateMerchantPage: React.FC = () => {
     setLoading(false);
   }
 };
+  
 
   const handlePlaceSelected = (place: any) => {
     const address = place?.formatted_address;

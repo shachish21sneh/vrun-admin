@@ -1,1 +1,1 @@
-export { default as MerchantsListingPage } from '../merchants-tables/merchants-listing-page';
+export { default as MerchantsListingPage } from '../merchants/merchants-table/merchants-listing-page';
