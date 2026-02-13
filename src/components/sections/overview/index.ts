@@ -1,1 +1,0 @@
-export { default as MerchantsListingPage } from '@/components/sections/merchants/merchants-table/merchants-listing-page';
