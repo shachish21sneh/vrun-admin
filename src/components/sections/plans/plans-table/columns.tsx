@@ -29,6 +29,21 @@ export const columns = (
     },
   },
   {
+  accessorKey: "sunroof_type",
+  header: "Sunroof Type",
+  cell: ({ row }) => {
+    const type = row.original.sunroof_type;
+
+    const map: Record<string, string> = {
+      "1": "Single Panel Sunroof",
+      "2": "Panorama / Fixed Sunroof",
+      "3": "Car Wash",
+    };
+
+    return map[type] || "-";
+  },
+},
+  {
     accessorKey: "status",
     header: "Status",
   },

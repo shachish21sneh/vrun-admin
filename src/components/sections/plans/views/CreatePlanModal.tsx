@@ -8,6 +8,15 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,15 +43,14 @@ export const CreatePlanModal = ({
   const [updatePlan] = useUpdatePlanMutation();
 
   const [form, setForm] = useState({
-    name: "",
-    description: "",
-    amount: "",
-    currency: "INR",
-    features: "",
-    status: "active",
-    sunroof_type: "",
-    trial_period_days: "",
-  });
+  name: "",
+  description: "",
+  amount: "",
+  currency: "INR",
+  features: "",
+  status: "active",
+  sunroof_type: "",
+});
 
   useEffect(() => {
   if (plan) {
@@ -56,8 +64,6 @@ export const CreatePlanModal = ({
         : "",
       status: plan.status ?? "active",
       sunroof_type: plan.sunroof_type ?? "",
-      trial_period_days:
-        plan.trial_period_days ?? "",
     });
   } else {
     setForm({
@@ -68,7 +74,6 @@ export const CreatePlanModal = ({
       features: "",
       status: "active",
       sunroof_type: "",
-      trial_period_days: "",
     });
   }
 }, [plan]);
@@ -87,15 +92,15 @@ export const CreatePlanModal = ({
     .filter((f) => f.length > 0);
 
   const payload = {
-    name: form.name,
-    description: form.description,
-    amount: Number(form.amount),
-    currency: form.currency,
-    features: featuresArray,
-    status: form.status,
-    sunroof_type: form.sunroof_type,
-    trial_period_days: form.trial_period_days || null,
-  };
+  name: form.name.trim(),
+  description: form.description.trim(),
+  amount: Number(form.amount),
+  currency: form.currency,
+  features: featuresArray,
+  status: form.status,
+  sunroof_type: form.sunroof_type,
+  trial_period_days: 365, // ✅ always 365
+};
 
   try {
     if (plan) {
@@ -149,6 +154,28 @@ export const CreatePlanModal = ({
               handleChange("amount", e.target.value)
             }
           />
+		  
+		  <Select
+  value={form.sunroof_type}
+  onValueChange={(value) =>
+    handleChange("sunroof_type", value)
+  }
+>
+  <SelectTrigger>
+    <SelectValue placeholder="Select Sunroof Type" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="1">
+      Single Panel Sunroof
+    </SelectItem>
+    <SelectItem value="2">
+      Panorama / Fixed Sunroof
+    </SelectItem>
+    <SelectItem value="3">
+      Car Wash
+    </SelectItem>
+  </SelectContent>
+</Select>
 
           <Textarea
   placeholder="Enter features separated by comma
