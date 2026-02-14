@@ -20,7 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { commonState } from "@/toolkit/common/common.slice";
-import { merchantsApi } from "@/toolkit/merchants/merchants.api";
+import {
+  useCreateMerchantsMutation,
+  useUpdateMerchantMutation,
+} from "@/toolkit/merchants/merchants.api";
 
 interface Props {
   defaultValues?: any;
@@ -88,12 +91,7 @@ const CreateMerchantPage: React.FC<Props> = ({
     }
   }, [defaultValues, form]);
 
-  import {
-  useCreateMerchantsMutation,
-  useUpdateMerchantMutation,
-} from "@/toolkit/merchants/merchants.api";
-
-const [createMerchant] = useCreateMerchantsMutation();
+  const [createMerchant] = useCreateMerchantsMutation();
 const [updateMerchant] = useUpdateMerchantMutation();
 
   const handleFileUpload = async (file: File) => {
