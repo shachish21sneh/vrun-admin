@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import { useUpdateMerchantMutation } from "@/toolkit/merchants/merchants.api";
 import { useGetMerchantDetailsQuery } from "@/toolkit/merchants/merchants.api";
+import { useUpdateMerchantMutation } from "@/toolkit/merchants/merchants.api";
 import { toast } from "react-toastify";
 import CreateMerchantPage from "@/components/sections/merchants/views/CreateMerchantPage";
 
@@ -20,10 +20,10 @@ export default function EditMerchantPage() {
   if (isLoading) return <div>Loading...</div>;
   if (!data) return <div>No merchant found</div>;
 
-  const handleUpdate = async (values: any) => {
+  const handleUpdate = async (
+    values: { business_name: string; business_email: string; password?: string }
+  ) => {
     try {
-      if (!values.password) delete values.password;
-
       await updateMerchant({
         id: merchantId as string,
         ...values,
@@ -31,16 +31,10 @@ export default function EditMerchantPage() {
 
       toast.success("Merchant updated successfully");
       router.push("/merchant");
-
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Update failed");
+    } catch {
+      toast.error("Update failed");
     }
   };
 
-  return (
-    <CreateMerchantPage
-      defaultValues={data}
-      onSubmitOverride={handleUpdate}
-    />
-  );
+  return <CreateMerchantPage />;
 }
