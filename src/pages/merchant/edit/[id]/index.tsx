@@ -6,9 +6,10 @@ export default function EditMerchantPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data, isLoading } = useGetMerchantDetailsQuery(id as string, {
-    skip: !id,
-  });
+  const { data, isLoading } = useGetMerchantDetailsQuery(
+  { id: id as string },
+  { skip: !id }
+);
 
   if (!id) return null;
 
