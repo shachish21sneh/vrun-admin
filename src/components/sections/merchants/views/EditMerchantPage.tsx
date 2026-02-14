@@ -8,10 +8,10 @@ const EditMerchantPage = () => {
 
   const merchantId = Array.isArray(id) ? id[0] : id;
 
-  const { data, isLoading } = useGetMerchantDetailsQuery(
-    merchantId ? { id: merchantId } : undefined,
-    { skip: !merchantId }
-  );
+const { data, isLoading } = useGetMerchantDetailsQuery(
+  { id: merchantId as string },
+  { skip: !merchantId }
+);
 
   if (isLoading) return <div>Loading...</div>;
   if (!data) return <div>Merchant not found</div>;
