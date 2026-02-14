@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Merchant } from "@/constants/data";
-import { MoreHorizontal, View } from "lucide-react";
+import { MoreHorizontal, View, Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -63,18 +63,24 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+  <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-          <DropdownMenuItem
-            onClick={() => router.push(`/merchant/view/${data?.id}`)}
-          >
-            <View className="mr-2 h-4 w-4" /> View
-          </DropdownMenuItem>
+  <DropdownMenuItem
+    onClick={() => router.push(`/merchant/view/${data?.id}`)}
+  >
+    <View className="mr-2 h-4 w-4" /> View
+  </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setOpen(true)}>
-            {data.active ? "Inactive" : "Activate"}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+  <DropdownMenuItem
+    onClick={() => router.push(`/merchant/edit/${data?.id}`)}
+  >
+    <Edit className="mr-2 h-4 w-4" /> Edit
+  </DropdownMenuItem>
+
+  <DropdownMenuItem onClick={() => setOpen(true)}>
+    {data.active ? "Inactive" : "Activate"}
+  </DropdownMenuItem>
+</DropdownMenuContent>
       </DropdownMenu>
     </>
   );
