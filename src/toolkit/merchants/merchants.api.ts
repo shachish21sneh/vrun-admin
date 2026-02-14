@@ -79,18 +79,17 @@ export const merchantsApi = commonApi.injectEndpoints({
 }),
 
 
-updateMerchant: builder.mutation<
+updateMerchant: build.mutation<
   { message: string },
   { id: string } & CREATE_MERCHANT_PAYLOAD
 >({
   query: ({ id, ...body }) => ({
-    url: `/merchant/${id}`,
+    url: `merchant/${id}`,
     method: "PUT",
     body,
   }),
   invalidatesTags: ["Merchants"],
 }),
-
 
   }),
   overrideExisting: true,

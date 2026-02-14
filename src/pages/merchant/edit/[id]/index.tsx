@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
-import { useGetMerchantByIdQuery } from "@/toolkit/merchants/merchants.api";
+import { useGetMerchantDetailsQuery } from "@/toolkit/merchants/merchants.api";
 import CreateMerchantPage from "@/components/sections/merchants/views/CreateMerchantPage";
 
 export default function EditMerchantPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data, isLoading } = useGetMerchantByIdQuery(id as string, {
+  const { data, isLoading } = useGetMerchantDetailsQuery(id as string, {
     skip: !id,
   });
 
