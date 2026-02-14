@@ -41,9 +41,7 @@ import {
 
 //Redux
 import { commonState } from "@/toolkit/common/common.slice";
-import {
-  useCreateMerchantsMutation,
-} from "@/toolkit/merchants/merchants.api";
+import { useCreateMerchantsMutation } from "@/toolkit/merchants/merchants.api";
 import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -141,9 +139,7 @@ const CreateMerchantPage: React.FC = () => {
     name: "contact_persons",
   });
 
-  const [createMerchant] = useCreateMerchantsMutation();
   const { useGetAllCarBrandsQuery } = masterCarBrandsApi;
-
   const [createMerchant] = useCreateMerchantsMutation();
   const { data: masterCardBrand, isSuccess } = useGetAllCarBrandsQuery();
 
