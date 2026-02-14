@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useEffect } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -20,12 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { FileUploader } from "@/components/file-uploader";
-import Autocomplete from "react-google-autocomplete";
-import { MultiSelect } from "@/components/ui/multi-select";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { Trash2, CarFront } from "lucide-react";
+import { CarFront } from "lucide-react";
 import { commonState } from "@/toolkit/common/common.slice";
 import { merchantsApi } from "@/toolkit/merchants/merchants.api";
 import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
@@ -35,8 +30,6 @@ interface Props {
   isEdit?: boolean;
   merchantId?: string;
 }
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 const formSchema = z.object({
   image_url: z.any().optional(),
@@ -93,16 +86,11 @@ const CreateMerchantPage: React.FC<Props> = ({
   });
 
   useEffect(() => {
-    if (defaultValues) {
-      form.reset(defaultValues);
-    }
-  }, [defaultValues]);
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "contact_persons",
-  });
-
+  if (defaultValues) {
+    form.reset(defaultValues);
+  }
+}, [defaultValues, form]);
+  
   const { useCreateMerchantMutation, useUpdateMerchantMutation } = merchantsApi;
 
   const [createMerchant] = useCreateMerchantMutation();
@@ -111,15 +99,6 @@ const CreateMerchantPage: React.FC<Props> = ({
   const { useGetAllCarBrandsQuery } = masterCarBrandsApi;
   const { data: masterCardBrand, isSuccess } =
     useGetAllCarBrandsQuery();
-
-  const carBrandsData =
-    (isSuccess &&
-      masterCardBrand?.data.map((brand: MasterCarBrand) => ({
-        label: brand?.display_name,
-        value: brand?.id,
-        icon: CarFront,
-      }))) ||
-    [];
 
   const handleFileUpload = async (file: File) => {
     const formData = new FormData();
@@ -182,12 +161,6 @@ if (!formData.password) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePlaceSelected = (place: any) => {
-    form.setValue("full_address", place?.formatted_address);
-    form.setValue("latitude", place?.geometry.location.lat());
-    form.setValue("longitude", place?.geometry.location.lng());
   };
 
   return (

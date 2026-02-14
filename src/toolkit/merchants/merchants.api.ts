@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { commonApi } from "../common.api";
 import { Merchant, ContactPerson } from "@/constants/data";
 
@@ -78,7 +80,7 @@ export const merchantsApi = commonApi.injectEndpoints({
 
 
 updateMerchant: builder.mutation<
-  any,
+  { message: string },
   { id: string } & CREATE_MERCHANT_PAYLOAD
 >({
   query: ({ id, ...body }) => ({
