@@ -88,10 +88,13 @@ const CreateMerchantPage: React.FC<Props> = ({
     }
   }, [defaultValues, form]);
 
-  const { useCreateMerchantsMutation, useUpdateMerchantMutation } =
-  merchantsApi;
-  const [createMerchant] = useCreateMerchantMutation();
-  const [updateMerchant] = useUpdateMerchantMutation();
+  import {
+  useCreateMerchantsMutation,
+  useUpdateMerchantMutation,
+} from "@/toolkit/merchants/merchants.api";
+
+const [createMerchant] = useCreateMerchantsMutation();
+const [updateMerchant] = useUpdateMerchantMutation();
 
   const handleFileUpload = async (file: File) => {
     const formData = new FormData();
