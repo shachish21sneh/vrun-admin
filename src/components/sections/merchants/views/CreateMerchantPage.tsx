@@ -183,11 +183,16 @@ const CreateMerchantPage: React.FC = () => {
       imageUrl = await handleFileUpload(formData.image_url[0]);
     }
 
-    await createMerchant({
-      ...formData,
-      image_url: imageUrl,
-      contact_persons: formData.contact_persons || [],
-    }).unwrap();
+    const payload = {
+  ...formData,
+  contact_persons: formData.contact_persons || [],
+};
+
+if (imageUrl) {
+  payload.image_url = imageUrl;
+}
+
+await createMerchant(payload).unwrap();
 
     toast.success("Merchant created successfully!");
     router.push("/merchant");
