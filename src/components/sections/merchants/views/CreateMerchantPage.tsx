@@ -88,9 +88,8 @@ const CreateMerchantPage: React.FC<Props> = ({
     }
   }, [defaultValues, form]);
 
-  const { useCreateMerchantMutation, useUpdateMerchantMutation } =
-    merchantsApi;
-
+  const { useCreateMerchantsMutation, useUpdateMerchantMutation } =
+  merchantsApi;
   const [createMerchant] = useCreateMerchantMutation();
   const [updateMerchant] = useUpdateMerchantMutation();
 
