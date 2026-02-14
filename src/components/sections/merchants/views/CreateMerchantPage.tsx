@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useEffect } from "react";
-import { useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { MasterCarBrand } from "@/constants/data";
 import { useRouter } from "next/router";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import {
@@ -20,10 +19,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { CarFront } from "lucide-react";
 import { commonState } from "@/toolkit/common/common.slice";
 import { merchantsApi } from "@/toolkit/merchants/merchants.api";
-import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 
 interface Props {
   defaultValues?: any;
@@ -86,19 +83,16 @@ const CreateMerchantPage: React.FC<Props> = ({
   });
 
   useEffect(() => {
-  if (defaultValues) {
-    form.reset(defaultValues);
-  }
-}, [defaultValues, form]);
-  
-  const { useCreateMerchantMutation, useUpdateMerchantMutation } = merchantsApi;
+    if (defaultValues) {
+      form.reset(defaultValues);
+    }
+  }, [defaultValues, form]);
+
+  const { useCreateMerchantMutation, useUpdateMerchantMutation } =
+    merchantsApi;
 
   const [createMerchant] = useCreateMerchantMutation();
   const [updateMerchant] = useUpdateMerchantMutation();
-
-  const { useGetAllCarBrandsQuery } = masterCarBrandsApi;
-  const { data: masterCardBrand, isSuccess } =
-    useGetAllCarBrandsQuery();
 
   const handleFileUpload = async (file: File) => {
     const formData = new FormData();
@@ -125,19 +119,19 @@ const CreateMerchantPage: React.FC<Props> = ({
     try {
       let imageUrl: string | null = defaultValues?.image_url || null;
 
-if (formData.image_url?.[0]) {
-  imageUrl = await handleFileUpload(formData.image_url[0]);
-}
+      if (formData.image_url?.[0]) {
+        imageUrl = await handleFileUpload(formData.image_url[0]);
+      }
 
-const payload: any = {
-  ...formData,
-  image_url: imageUrl ?? defaultValues?.image_url,
-  contact_persons: formData.contact_persons || [],
-};
+      const payload: any = {
+        ...formData,
+        image_url: imageUrl ?? defaultValues?.image_url,
+        contact_persons: formData.contact_persons || [],
+      };
 
-if (!formData.password) {
-  delete payload.password;
-}
+      if (!formData.password) {
+        delete payload.password;
+      }
 
       if (isEdit && merchantId) {
         await updateMerchant({
@@ -156,7 +150,9 @@ if (!formData.password) {
       const message =
         error?.data?.message ||
         error?.data?.error ||
+        error?.error ||
         "Something went wrong";
+
       toast.error(message);
     } finally {
       setLoading(false);
@@ -167,7 +163,6 @@ if (!formData.password) {
     <div className="container">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
           <Button
             type="button"
             variant="secondary"
@@ -176,7 +171,6 @@ if (!formData.password) {
             <ChevronLeftIcon className="w-5 h-5" />
           </Button>
 
-          {/* Business Name */}
           <FormField
             control={form.control}
             name="business_name"
@@ -191,7 +185,6 @@ if (!formData.password) {
             )}
           />
 
-          {/* Email */}
           <FormField
             control={form.control}
             name="business_email"
@@ -206,7 +199,6 @@ if (!formData.password) {
             )}
           />
 
-          {/* Password (Only Create Mode) */}
           {!isEdit && (
             <FormField
               control={form.control}
