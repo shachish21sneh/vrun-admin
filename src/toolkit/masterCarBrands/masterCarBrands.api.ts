@@ -50,9 +50,6 @@ export const masterCarBrandsApi = commonApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      transformErrorResponse: (response) => {
-        return (response?.data as unknown as ErrorResponse)?.error;
-      },
     }),
     updateCarBrand: build.mutation<
       CREATE_CAR_BRAND_RESPONSE,
@@ -63,10 +60,13 @@ export const masterCarBrandsApi = commonApi.injectEndpoints({
         method: "PUT",
         body,
       }),
-      transformErrorResponse: (response) => {
-        return (response?.data as unknown as ErrorResponse)?.error;
-      },
     }),
   }),
   overrideExisting: true,
 });
+
+export const {
+  useGetAllCarBrandsQuery,
+  useCreateCarBrandMutation,
+  useUpdateCarBrandMutation,
+} = masterCarBrandsApi;
