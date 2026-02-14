@@ -42,7 +42,6 @@ import {
 //Redux
 import { commonState } from "@/toolkit/common/common.slice";
 import { useCreateMerchantsMutation } from "@/toolkit/merchants/merchants.api";
-import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 import { useGetAllCarBrandsQuery } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 
 
