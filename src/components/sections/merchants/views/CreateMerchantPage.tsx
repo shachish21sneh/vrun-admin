@@ -177,7 +177,7 @@ const CreateMerchantPage: React.FC = () => {
   setLoading(true);
 
   try {
-    let imageUrl = null;
+    let imageUrl: string | null = null;
 
     if (formData.image_url?.[0]) {
       imageUrl = await handleFileUpload(formData.image_url[0]);
@@ -187,11 +187,10 @@ const CreateMerchantPage: React.FC = () => {
       ...formData,
       image_url: imageUrl,
       contact_persons: formData.contact_persons || [],
-    }).unwrap(); // 🔥 IMPORTANT
+    }).unwrap();
 
     toast.success("Merchant created successfully!");
-
-    router.push("/merchant"); // ✅ Only runs if success
+    router.push("/merchant");
 
   } catch (error: any) {
     console.error("Submission Error:", error);
@@ -199,15 +198,19 @@ const CreateMerchantPage: React.FC = () => {
     const message =
       error?.data?.message ||
       error?.data?.error ||
-      "Mobile number already exists";
+      error?.error ||
+      "Something went wrong. Please try again.";
 
-    // 🔥 Show error under phone field
-    form.setError("business_phone", {
-      type: "manual",
-      message,
-    });
+    const field = error?.data?.field; // if backend sends which field failed
 
-    toast.error(message);
+    if (field) {
+      form.setError(field as keyof FormValues, {
+        type: "manual",
+        message,
+      });
+    } else {
+      toast.error(message);
+    }
 
   } finally {
     setLoading(false);
