@@ -1,27 +1,25 @@
 import { useRouter } from "next/router";
 import { useGetMerchantDetailsQuery } from "@/toolkit/merchants/merchants.api";
-import CreateMerchantPage from "@/components/sections/merchants/views/CreateMerchantPage";
+import EditMerchantPage from "@/components/sections/merchants/views/EditMerchantPage";
 
-export default function EditMerchantPage() {
+export default function EditMerchantRoute() {
   const router = useRouter();
   const { id } = router.query;
 
+  const merchantId = Array.isArray(id) ? id[0] : id;
+
   const { data, isLoading } = useGetMerchantDetailsQuery(
-  { id: id as string },
-  { skip: !id }
-);
+    merchantId ? { id: merchantId } : ({} as any),
+    { skip: !merchantId }
+  );
 
-  if (!id) return null;
-
-  if (isLoading) return <p>Loading...</p>;
-
-  if (!data) return <p>Merchant not found</p>;
+  if (isLoading) return <div>Loading...</div>;
+  if (!data) return <div>Merchant not found</div>;
 
   return (
-    <CreateMerchantPage
-      defaultValues={data}
-      isEdit
-      merchantId={id as string}
+    <EditMerchantPage
+      merchantData={data}
+      merchantId={merchantId as string}
     />
   );
 }
