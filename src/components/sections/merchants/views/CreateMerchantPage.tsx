@@ -174,43 +174,51 @@ const CreateMerchantPage: React.FC = () => {
   };
 
   const onSubmit = async (formData: FormValues) => {
+  if (loading) return; // prevent double click
+
   setLoading(true);
 
   try {
-    let imageUrl: string | null = null;
+    let imageUrl: string | undefined;
 
     if (formData.image_url?.[0]) {
       imageUrl = await handleFileUpload(formData.image_url[0]);
     }
 
-	await createMerchant({
-	...formData,
-	image_url: imageUrl ?? "",
-	contact_persons: formData.contact_persons || [],
-	}).unwrap();
+    const payload: any = {
+      business_name: formData.business_name,
+      business_email: formData.business_email,
+      business_phone: formData.business_phone,
+      active: formData.active,
+      full_address: formData.full_address,
+      city: formData.city,
+      state: formData.state,
+      latitude: formData.latitude,
+      longitude: formData.longitude,
+      working_days: formData.working_days,
+      brands: formData.brands,
+      password: formData.password,
+      contact_persons: formData.contact_persons ?? [],
+    };
+
+    // only attach image_url if exists
+    if (imageUrl) {
+      payload.image_url = imageUrl;
+    }
+
+    await createMerchant(payload).unwrap();
 
     toast.success("Merchant created successfully!");
     router.push("/merchant");
 
   } catch (error: any) {
-    console.error("Submission Error:", error);
+    console.log("CREATE ERROR FULL:", error);
 
-    const message =
+    toast.error(
       error?.data?.message ||
       error?.data?.error ||
-      error?.error ||
-      "Something went wrong. Please try again.";
-
-    const field = error?.data?.field; // if backend sends which field failed
-
-    if (field) {
-      form.setError(field as keyof FormValues, {
-        type: "manual",
-        message,
-      });
-    } else {
-      toast.error(message);
-    }
+      "Server error. Check console."
+    );
 
   } finally {
     setLoading(false);
