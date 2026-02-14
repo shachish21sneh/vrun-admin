@@ -44,6 +44,12 @@ import { commonState } from "@/toolkit/common/common.slice";
 import { useCreateMerchantsMutation } from "@/toolkit/merchants/merchants.api";
 import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 
+interface Props {
+  defaultValues?: any;
+  isEdit?: boolean;
+  merchantId?: string;
+}
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
@@ -110,7 +116,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const CreateMerchantPage: React.FC = () => {
+const CreateMerchantPage: React.FC<Props> = ({
+  defaultValues,
+  isEdit = false,
+  merchantId,
+}) => {
   const [loading, setLoading] = useState(false);
   const { token } = useSelector(commonState);
   const router = useRouter();
