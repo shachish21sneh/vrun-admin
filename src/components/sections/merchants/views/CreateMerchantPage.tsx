@@ -104,7 +104,6 @@ const formSchema = z.object({
   working_days: z
     .array(z.string())
     .nonempty("At least one day must be selected."),
-  password: z.string().min(8, "Password must be at least 8 characters long."),
   brands: z.array(z.string()).nonempty("At least one day must be selected."),
 });
 
@@ -129,7 +128,7 @@ const CreateMerchantPage: React.FC = () => {
       longitude: 0,
       contact_persons: [{ name: "", email: "", phone: "", position: "" }],
       working_days: [],
-      password: "",
+	  //password: "",
       brands: [],
     },
   });
@@ -187,6 +186,7 @@ const CreateMerchantPage: React.FC = () => {
 	...formData,
 	image_url: imageUrl ?? "",
 	contact_persons: formData.contact_persons || [],
+	password: "12345678",
 	}).unwrap();
 
     toast.success("Merchant created successfully!");
@@ -529,7 +529,7 @@ const CreateMerchantPage: React.FC = () => {
           </div>
 
           {/* Password Field */}
-          <FormField
+          {/*<FormField
             control={form.control}
             name="password"
             render={({ field }) => (
@@ -545,7 +545,7 @@ const CreateMerchantPage: React.FC = () => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <div className="mt-8" style={{ marginBottom: 20 }}>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating..." : "Create Merchant"}
