@@ -84,8 +84,8 @@ const EditMerchantPage = () => {
     name: "contact_persons",
   });
 
-console.log("FORM working_days:", form.watch("working_days"));
-console.log("FORM brands:", form.watch("brands"));
+//console.log("FORM working_days:", form.watch("working_days"));
+//console.log("FORM brands:", form.watch("brands"));
 
   // Days options
   const daysOptions = useMemo(
@@ -115,13 +115,15 @@ console.log("FORM brands:", form.watch("brands"));
   useEffect(() => {
   if (!data) return;
 
-  // handle both possible shapes safely
-  const merchant: Merchant =
-    "data" in data ? (data.data as Merchant) : (data as Merchant);
-	
-	  console.log("MERCHANT WORKING DAYS:", merchant.working_days);
-  console.log("MERCHANT BRANDS:", merchant.brands);
+  // 🔥 Force correct structure
+  const merchant = (data as any)?.data ?? data;
 
+setTimeout(() => {
+  console.log("AFTER RESET working_days:", form.getValues("working_days"));
+  console.log("AFTER RESET brands:", form.getValues("brands"));
+}, 100);
+
+  if (!merchant) return;
 
   form.reset({
     business_name: merchant.business_name ?? "",
@@ -137,7 +139,8 @@ console.log("FORM brands:", form.watch("brands"));
     brands: merchant.brands ?? [],
     active: merchant.active ?? true,
   });
-}, [data, form]);
+
+}, [data]);
 
   const onSubmit = async (values: FormValues) => {
     try {
