@@ -496,8 +496,8 @@ const CreateMerchantPage: React.FC = () => {
 					  variant="inverted"
 					  animation={2}
 					  maxCount={3}
-					/>  
-					</FormControl>
+					/>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -511,6 +511,7 @@ const CreateMerchantPage: React.FC = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Select Car Brands</FormLabel>
+                    <FormControl>
 					<MultiSelect
 					  options={carBrandsData}
 					  value={field.value ?? []}
@@ -519,7 +520,7 @@ const CreateMerchantPage: React.FC = () => {
 					  variant="inverted"
 					  animation={2}
 					  maxCount={3}
-					/> 
+					/>                    
 					</FormControl>
                     <FormMessage />
                   </FormItem>
