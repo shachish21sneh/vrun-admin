@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { FileUploader } from "@/components/file-uploader";
-
 import {
   Form,
   FormField,
@@ -42,7 +41,6 @@ type ContactPersonForm = {
 };
 
 type FormValues = {
-  image_url?: File[] | null;
   business_name: string;
   business_email: string;
   business_phone: string;
@@ -78,7 +76,6 @@ const EditMerchantPage = () => {
   const router = useRouter();
   const params = useParams();
   const merchantId = params?.id as string;
-
   const { token } = useSelector(commonState);
 
   const { data } = useGetMerchantDetailsQuery(
@@ -90,11 +87,15 @@ const EditMerchantPage = () => {
   const { useGetAllCarBrandsQuery } = masterCarBrandsApi;
   const { data: brandData } = useGetAllCarBrandsQuery();
 
+  /* -------- IMAGE STATE (IMPORTANT) -------- */
+
   const [existingImage, setExistingImage] = useState<string | null>(null);
+  const [newImage, setNewImage] = useState<File | null>(null);
+
+  /* ---------------- FORM ---------------- */
 
   const form = useForm<FormValues>({
     defaultValues: {
-      image_url: null,
       business_name: "",
       business_email: "",
       business_phone: "",
@@ -144,9 +145,9 @@ const EditMerchantPage = () => {
   useEffect(() => {
     if (!data) return;
 
-    const merchant = data as any;
+    const merchant = data as FormValues & { image_url?: string };
 
-    setExistingImage(merchant.image_url || null);
+    setExistingImage(merchant.image_url ?? null);
 
     form.reset({
       business_name: merchant.business_name ?? "",
@@ -164,36 +165,9 @@ const EditMerchantPage = () => {
     });
   }, [data, form]);
 
-  /* ---------------- GOOGLE ADDRESS ---------------- */
-
-  const handlePlaceSelected = (place: GooglePlace) => {
-    if (!place) return;
-
-    const address = place.formatted_address ?? "";
-
-    const city =
-      place.address_components?.find((c) =>
-        c.types.includes("locality")
-      )?.long_name ?? "";
-
-    const state =
-      place.address_components?.find((c) =>
-        c.types.includes("administrative_area_level_1")
-      )?.short_name ?? "";
-
-    const latitude = place.geometry?.location?.lat?.() ?? 0;
-    const longitude = place.geometry?.location?.lng?.() ?? 0;
-
-    form.setValue("full_address", address);
-    form.setValue("city", city);
-    form.setValue("state", state);
-    form.setValue("latitude", latitude);
-    form.setValue("longitude", longitude);
-  };
-
   /* ---------------- IMAGE UPLOAD ---------------- */
 
-  const uploadImage = async (file: File) => {
+  const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder_name", "merchant");
@@ -210,7 +184,33 @@ const EditMerchantPage = () => {
       }
     );
 
-    return response?.data?.Location;
+    return response.data.Location;
+  };
+
+  /* ---------------- GOOGLE ADDRESS ---------------- */
+
+  const handlePlaceSelected = (place: GooglePlace) => {
+    if (!place) return;
+
+    form.setValue("full_address", place.formatted_address ?? "");
+
+    const city =
+      place.address_components?.find((c) =>
+        c.types.includes("locality")
+      )?.long_name ?? "";
+
+    const state =
+      place.address_components?.find((c) =>
+        c.types.includes("administrative_area_level_1")
+      )?.short_name ?? "";
+
+    const latitude = place.geometry?.location?.lat?.() ?? 0;
+    const longitude = place.geometry?.location?.lng?.() ?? 0;
+
+    form.setValue("city", city);
+    form.setValue("state", state);
+    form.setValue("latitude", latitude);
+    form.setValue("longitude", longitude);
   };
 
   /* ---------------- SUBMIT ---------------- */
@@ -219,8 +219,8 @@ const EditMerchantPage = () => {
     try {
       let imageUrl = existingImage;
 
-      if (values.image_url?.[0]) {
-        imageUrl = await uploadImage(values.image_url[0]);
+      if (newImage) {
+        imageUrl = await uploadImage(newImage);
       }
 
       const formattedContactPersons = values.contact_persons.map((cp) => ({
@@ -252,37 +252,45 @@ const EditMerchantPage = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-          {/* IMAGE */}
+          {/* IMAGE FIELD */}
+          <div>
+            <FormLabel>Business Logo</FormLabel>
+
+            {existingImage && !newImage && (
+              <img
+                src={existingImage}
+                alt="Logo"
+                className="w-32 h-32 object-cover rounded mb-3"
+              />
+            )}
+
+            <FileUploader
+              value={newImage ? [newImage] : []}
+              onValueChange={(files) => {
+                if (files?.[0]) setNewImage(files[0]);
+              }}
+              maxFiles={1}
+              maxSize={5 * 1024 * 1024}
+            />
+          </div>
+
+          {/* Rest of your fields remain same */}
+
           <FormField
             control={form.control}
-            name="image_url"
+            name="business_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Business Logo</FormLabel>
+                <FormLabel>Business Name</FormLabel>
                 <FormControl>
-                  <FileUploader
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    maxFiles={1}
-                    maxSize={5 * 1024 * 1024}
-                  />
+                  <Input {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
 
-          {existingImage && (
-            <img
-              src={existingImage}
-              alt="Merchant Logo"
-              className="w-32 h-32 object-cover rounded"
-            />
-          )}
-
-          {/* --- rest fields unchanged --- */}
-
-          {/* Keep your existing business, address, multiselect, contact persons etc here */}
-
+          {/* Continue rest of form same as before */}
+          
           <Button type="submit" className="w-full">
             Update Merchant
           </Button>
