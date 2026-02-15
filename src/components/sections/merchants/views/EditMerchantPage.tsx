@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
+import Autocomplete from "react-google-autocomplete";
 
 import {
   useGetMerchantDetailsQuery,
@@ -38,16 +39,15 @@ type FormValues = {
   business_email: string;
   business_phone: string;
   full_address: string;
-  city?: string;
-  state?: string;
-  latitude?: number;
-  longitude?: number;
+  city: string;
+  state: string;
+  latitude: number;
+  longitude: number;
   contact_persons: ContactPersonForm[];
   working_days: string[];
   brands: string[];
   active?: boolean;
 };
-
 
 const EditMerchantPage = () => {
   const router = useRouter();
@@ -85,7 +85,7 @@ const EditMerchantPage = () => {
     name: "contact_persons",
   });
 
-  // Working Days options
+  // Days
   const daysOptions = useMemo(
     () => [
       { label: "Monday", value: "Monday" },
@@ -99,7 +99,7 @@ const EditMerchantPage = () => {
     []
   );
 
-  // Brand options
+  // Brands
   const brandOptions = useMemo(
     () =>
       brandData?.data?.map((brand: MasterCarBrand) => ({
@@ -109,27 +109,53 @@ const EditMerchantPage = () => {
     [brandData]
   );
 
-  // Prefill
+  // Prefill data
   useEffect(() => {
-  if (!data) return;
+    if (!data) return;
 
-  const merchant = data as FormValues;
+    const merchant = data as any;
 
-  form.reset({
-    business_name: merchant.business_name ?? "",
-    business_email: merchant.business_email ?? "",
-    business_phone: merchant.business_phone ?? "",
-    full_address: merchant.full_address ?? "",
-    city: merchant.city ?? "",
-    state: merchant.state ?? "",
-    latitude: merchant.latitude ?? 0,
-    longitude: merchant.longitude ?? 0,
-    contact_persons: merchant.contact_persons ?? [],
-    working_days: merchant.working_days ?? [],
-    brands: merchant.brands ?? [],
-    active: merchant.active ?? true,
-  });
-}, [data, form]);
+    form.reset({
+      business_name: merchant.business_name ?? "",
+      business_email: merchant.business_email ?? "",
+      business_phone: merchant.business_phone ?? "",
+      full_address: merchant.full_address ?? "",
+      city: merchant.city ?? "",
+      state: merchant.state ?? "",
+      latitude: merchant.latitude ?? 0,
+      longitude: merchant.longitude ?? 0,
+      contact_persons: merchant.contact_persons ?? [],
+      working_days: merchant.working_days ?? [],
+      brands: merchant.brands ?? [],
+      active: merchant.active ?? true,
+    });
+  }, [data, form]);
+
+  // Google place select
+  const handlePlaceSelected = (place: google.maps.places.PlaceResult) => {
+    if (!place) return;
+
+    const address = place.formatted_address || "";
+
+    const city =
+      place.address_components?.find((c) =>
+        c.types.includes("locality")
+      )?.long_name || "";
+
+    const state =
+      place.address_components?.find((c) =>
+        c.types.includes("administrative_area_level_1")
+      )?.short_name || "";
+
+    const latitude = place.geometry?.location?.lat() || 0;
+    const longitude = place.geometry?.location?.lng() || 0;
+
+    form.setValue("full_address", address);
+    form.setValue("city", city);
+    form.setValue("state", state);
+    form.setValue("latitude", latitude);
+    form.setValue("longitude", longitude);
+  };
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -159,6 +185,7 @@ const EditMerchantPage = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
+          {/* Basic Fields */}
           <FormField
             control={form.control}
             name="business_name"
@@ -202,6 +229,7 @@ const EditMerchantPage = () => {
             )}
           />
 
+          {/* Address with Google */}
           <FormField
             control={form.control}
             name="full_address"
@@ -209,11 +237,48 @@ const EditMerchantPage = () => {
               <FormItem>
                 <FormLabel>Address</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Autocomplete
+                    apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY}
+                    defaultValue={field.value}
+                    onPlaceSelected={handlePlaceSelected}
+                    className="w-full border border-input rounded-md h-9 px-3"
+                    options={{
+                      types: ["establishment", "geocode"],
+                      componentRestrictions: { country: "in" },
+                    }}
+                  />
                 </FormControl>
               </FormItem>
             )}
           />
+
+          <div className="flex gap-4">
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input {...field} readOnly />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>State</FormLabel>
+                  <FormControl>
+                    <Input {...field} readOnly />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* Working Days */}
           <FormField
@@ -227,7 +292,6 @@ const EditMerchantPage = () => {
                     options={daysOptions}
                     value={field.value ?? []}
                     onValueChange={field.onChange}
-                    placeholder="Select working days"
                   />
                 </FormControl>
               </FormItem>
@@ -246,7 +310,6 @@ const EditMerchantPage = () => {
                     options={brandOptions}
                     value={field.value ?? []}
                     onValueChange={field.onChange}
-                    placeholder="Select car brands"
                   />
                 </FormControl>
               </FormItem>
@@ -259,21 +322,16 @@ const EditMerchantPage = () => {
 
             {fields.map((item, index) => (
               <div key={item.id} className="grid grid-cols-4 gap-4 mb-4">
-
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.name`}
-                  render={({ field }) => (
-                    <Input placeholder="Name" {...field} />
-                  )}
+                  render={({ field }) => <Input placeholder="Name" {...field} />}
                 />
 
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.email`}
-                  render={({ field }) => (
-                    <Input placeholder="Email" {...field} />
-                  )}
+                  render={({ field }) => <Input placeholder="Email" {...field} />}
                 />
 
                 <FormField
@@ -320,7 +378,6 @@ const EditMerchantPage = () => {
           <Button type="submit" className="w-full">
             Update Merchant
           </Button>
-
         </form>
       </Form>
     </div>
