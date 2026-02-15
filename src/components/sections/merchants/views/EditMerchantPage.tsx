@@ -110,25 +110,25 @@ const EditMerchantPage = () => {
 
   // ✅ Prefill Data (Correct dependency handling)
   useEffect(() => {
-    if (data) {
-      const merchant = data as Merchant;
+  if (!data) return;
 
-      form.reset({
-        business_name: merchant.business_name,
-        business_email: merchant.business_email,
-        business_phone: merchant.business_phone,
-        full_address: merchant.full_address,
-        city: merchant.city,
-        state: merchant.state,
-        latitude: merchant.latitude,
-        longitude: merchant.longitude,
-        contact_persons: merchant.contact_persons || [],
-        working_days: merchant.working_days || [],
-        brands: merchant.brands || [],
-        active: merchant.active,
-      });
-    }
-  }, [data, form]);
+  const merchant = data as Merchant;
+
+  form.reset({
+    business_name: merchant.business_name,
+    business_email: merchant.business_email,
+    business_phone: merchant.business_phone,
+    full_address: merchant.full_address,
+    city: merchant.city,
+    state: merchant.state,
+    latitude: merchant.latitude,
+    longitude: merchant.longitude,
+    contact_persons: merchant.contact_persons || [],
+    working_days: merchant.working_days || [],
+    brands: merchant.brands || [],
+    active: merchant.active,
+  });
+}, [data, form]);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -220,41 +220,41 @@ const EditMerchantPage = () => {
 
           {/* Working Days */}
           <FormField
-            control={form.control}
-            name="working_days"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Working Days</FormLabel>
-                <FormControl>
-                  <MultiSelect
-                    options={daysOptions}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    placeholder="Select working days"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+  control={form.control}
+  name="working_days"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Working Days</FormLabel>
+      <FormControl>
+        <MultiSelect
+          options={daysOptions}              // ✅ FIXED
+          value={field.value || []}          // ✅ important
+          onValueChange={field.onChange}
+          placeholder="Select working days"
+        />
+      </FormControl>
+    </FormItem>
+  )}
+/>
 
           {/* Car Brands */}
           <FormField
-            control={form.control}
-            name="brands"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Car Brands</FormLabel>
-                <FormControl>
-                  <MultiSelect
-                    options={brandOptions}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    placeholder="Select car brands"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+  control={form.control}
+  name="brands"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Car Brands</FormLabel>
+      <FormControl>
+        <MultiSelect
+          options={brandOptions}             // ✅ FIXED
+          value={field.value || []}          // ✅ important
+          onValueChange={field.onChange}
+          placeholder="Select car brands"
+        />
+      </FormControl>
+    </FormItem>
+  )}
+/>
 
           {/* Contact Persons */}
           <div>
