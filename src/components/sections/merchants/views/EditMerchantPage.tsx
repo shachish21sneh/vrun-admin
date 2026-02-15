@@ -122,19 +122,25 @@ const EditMerchantPage = () => {
   ];
 
   const onSubmit = async (values: FormValues) => {
-    try {
-      await updateMerchant({
-        id: merchantId,
-        ...values,
-      }).unwrap();
+  try {
+    const formattedContactPersons = values.contact_persons.map((cp) => ({
+      ...cp,
+      phone: cp.phone ?? null, // ✅ force undefined → null
+    }));
 
-      toast.success("Merchant updated successfully");
-      router.push("/merchant");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update merchant");
-    }
-  };
+    await updateMerchant({
+      id: merchantId,
+      ...values,
+      contact_persons: formattedContactPersons,
+    }).unwrap();
+
+    toast.success("Merchant updated successfully");
+    router.push("/merchant");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to update merchant");
+  }
+};
 
   return (
     <div className="container max-w-5xl py-10">
