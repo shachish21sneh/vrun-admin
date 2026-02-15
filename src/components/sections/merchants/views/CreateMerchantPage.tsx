@@ -128,7 +128,6 @@ const CreateMerchantPage: React.FC = () => {
       longitude: 0,
       contact_persons: [{ name: "", email: "", phone: "", position: "" }],
       working_days: [],
-	  //password: "",
       brands: [],
     },
   });
@@ -307,12 +306,12 @@ const CreateMerchantPage: React.FC = () => {
                   <FormItem>
                     <FormLabel>Business Phone number</FormLabel>
                     <FormControl>
-<PhoneInput
-  {...field}
-  defaultCountry="IN"
-  value={field.value ?? undefined}
-  onChange={(value) => field.onChange(value ?? undefined)}
-/>                    </FormControl>
+                      <PhoneInput
+                        placeholder="Enter business phone number"
+                        {...field}
+                        defaultCountry="IN"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -529,7 +528,7 @@ const CreateMerchantPage: React.FC = () => {
           </div>
 
           {/* Password Field */}
-          {/*<FormField
+          {/* <FormField
             control={form.control}
             name="password"
             render={({ field }) => (

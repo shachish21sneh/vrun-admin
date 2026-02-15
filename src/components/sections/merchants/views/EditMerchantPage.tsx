@@ -1,25 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
 import Autocomplete from "react-google-autocomplete";
-import axios from "axios";
-import { useSelector } from "react-redux";
 
 import {
   useGetMerchantDetailsQuery,
   useUpdateMerchantMutation,
 } from "@/toolkit/merchants/merchants.api";
+
 import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
-import { commonState } from "@/toolkit/common/common.slice";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { FileUploader } from "@/components/file-uploader";
 import {
   Form,
   FormField,
@@ -75,7 +72,6 @@ const EditMerchantPage = () => {
   const router = useRouter();
   const params = useParams();
   const merchantId = params?.id as string;
-  const { token } = useSelector(commonState);
 
   const { data } = useGetMerchantDetailsQuery(
     { id: merchantId },
@@ -85,9 +81,6 @@ const EditMerchantPage = () => {
   const [updateMerchant] = useUpdateMerchantMutation();
   const { useGetAllCarBrandsQuery } = masterCarBrandsApi;
   const { data: brandData } = useGetAllCarBrandsQuery();
-
-  const [existingImage, setExistingImage] = useState<string | null>(null);
-  const [newImage, setNewImage] = useState<File | null>(null);
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -140,9 +133,7 @@ const EditMerchantPage = () => {
   useEffect(() => {
     if (!data) return;
 
-    const merchant = data as FormValues & { image_url?: string };
-
-    setExistingImage(merchant.image_url ?? null);
+    const merchant = data as FormValues;
 
     form.reset({
       business_name: merchant.business_name ?? "",
@@ -160,32 +151,12 @@ const EditMerchantPage = () => {
     });
   }, [data, form]);
 
-  /* ---------------- IMAGE UPLOAD ---------------- */
-
-  const uploadImage = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder_name", "merchant");
-
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}media/upload`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response.data.Location;
-  };
-
   /* ---------------- GOOGLE ADDRESS ---------------- */
 
   const handlePlaceSelected = (place: GooglePlace) => {
     if (!place) return;
 
-    form.setValue("full_address", place.formatted_address ?? "");
+    const address = place.formatted_address ?? "";
 
     const city =
       place.address_components?.find((c) =>
@@ -200,6 +171,7 @@ const EditMerchantPage = () => {
     const latitude = place.geometry?.location?.lat?.() ?? 0;
     const longitude = place.geometry?.location?.lng?.() ?? 0;
 
+    form.setValue("full_address", address);
     form.setValue("city", city);
     form.setValue("state", state);
     form.setValue("latitude", latitude);
@@ -210,20 +182,15 @@ const EditMerchantPage = () => {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      let imageUrl = existingImage;
-
-      if (newImage) {
-        imageUrl = await uploadImage(newImage);
-      }
+      const formattedContactPersons = values.contact_persons.map((cp) => ({
+        ...cp,
+        phone: cp.phone ?? null,
+      }));
 
       await updateMerchant({
         id: merchantId,
         ...values,
-        image_url: imageUrl ?? "",
-        contact_persons: values.contact_persons.map((cp) => ({
-          ...cp,
-          phone: cp.phone ?? null,
-        })),
+        contact_persons: formattedContactPersons,
       }).unwrap();
 
       toast.success("Merchant updated successfully");
@@ -243,29 +210,7 @@ const EditMerchantPage = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-          {/* Image */}
-          <div>
-            <FormLabel>Business Logo</FormLabel>
-            {existingImage && !newImage && (
-              <img
-                src={existingImage}
-                alt="Logo"
-                className="w-32 h-32 object-cover rounded mb-3"
-              />
-            )}
-            <FileUploader
-  value={newImage ? [newImage] : []}
-  onValueChange={(files) => {
-    if (Array.isArray(files) && files.length > 0) {
-      setNewImage(files[0]);
-    }
-  }}
-  maxFiles={1}
-  maxSize={5 * 1024 * 1024}
-/>
-          </div>
-
-          {/* Basic Info */}
+          {/* Business Name */}
           <FormField
             control={form.control}
             name="business_name"
@@ -279,6 +224,7 @@ const EditMerchantPage = () => {
             )}
           />
 
+          {/* Email */}
           <FormField
             control={form.control}
             name="business_email"
@@ -292,6 +238,7 @@ const EditMerchantPage = () => {
             )}
           />
 
+          {/* Phone */}
           <FormField
             control={form.control}
             name="business_phone"
@@ -299,7 +246,11 @@ const EditMerchantPage = () => {
               <FormItem>
                 <FormLabel>Phone</FormLabel>
                 <FormControl>
-                  <PhoneInput {...field} defaultCountry="IN" />
+                  <PhoneInput
+                    {...field}
+                    defaultCountry="IN"
+                    value={field.value ?? undefined}
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -321,6 +272,10 @@ const EditMerchantPage = () => {
                     }
                     onPlaceSelected={handlePlaceSelected}
                     className="w-full border border-input rounded-md h-9 px-3"
+                    options={{
+                      types: ["establishment", "geocode"],
+                      componentRestrictions: { country: "in" },
+                    }}
                   />
                 </FormControl>
               </FormItem>
@@ -397,7 +352,6 @@ const EditMerchantPage = () => {
 
             {fields.map((item, index) => (
               <div key={item.id} className="grid grid-cols-4 gap-4 mb-4">
-
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.name`}
@@ -414,7 +368,11 @@ const EditMerchantPage = () => {
                   control={form.control}
                   name={`contact_persons.${index}.phone`}
                   render={({ field }) => (
-                    <PhoneInput {...field} defaultCountry="IN" />
+                    <PhoneInput
+                      {...field}
+                      defaultCountry="IN"
+                      value={field.value ?? undefined}
+                    />
                   )}
                 />
 
@@ -431,7 +389,6 @@ const EditMerchantPage = () => {
                 >
                   Remove
                 </Button>
-
               </div>
             ))}
 
@@ -449,7 +406,6 @@ const EditMerchantPage = () => {
           <Button type="submit" className="w-full">
             Update Merchant
           </Button>
-
         </form>
       </Form>
     </div>
