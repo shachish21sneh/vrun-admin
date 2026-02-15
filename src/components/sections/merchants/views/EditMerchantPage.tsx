@@ -128,9 +128,14 @@ const EditMerchantPage: React.FC = () => {
 
       toast.success("Merchant updated successfully");
       router.push("/merchant");
-    } catch (error: any) {
-      toast.error(error?.data || "Update failed");
-    }
+    } catch (error: unknown) {
+  if (typeof error === "object" && error !== null && "data" in error) {
+    const err = error as { data?: string };
+    toast.error(err.data ?? "Update failed");
+  } else {
+    toast.error("Update failed");
+  }
+}
   };
 
   return (
