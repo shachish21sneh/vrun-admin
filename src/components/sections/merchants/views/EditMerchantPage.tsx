@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -9,6 +9,8 @@ import {
   useGetMerchantDetailsQuery,
   useUpdateMerchantMutation,
 } from "@/toolkit/merchants/merchants.api";
+
+import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +25,6 @@ import {
 } from "@/components/ui/form";
 
 import { MasterCarBrand, Merchant } from "@/constants/data";
-import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 
 type ContactPersonForm = {
   name: string;
@@ -83,65 +84,72 @@ const EditMerchantPage = () => {
     name: "contact_persons",
   });
 
-  // 🔹 Prefill data
+  // ✅ Days Options (Correct)
+  const daysOptions = useMemo(
+    () => [
+      { label: "Monday", value: "Monday" },
+      { label: "Tuesday", value: "Tuesday" },
+      { label: "Wednesday", value: "Wednesday" },
+      { label: "Thursday", value: "Thursday" },
+      { label: "Friday", value: "Friday" },
+      { label: "Saturday", value: "Saturday" },
+      { label: "Sunday", value: "Sunday" },
+    ],
+    []
+  );
+
+  // ✅ Brand Options (Correct)
+  const brandOptions = useMemo(
+    () =>
+      brandData?.data?.map((brand: MasterCarBrand) => ({
+        label: brand.display_name,
+        value: brand.id,
+      })) || [],
+    [brandData]
+  );
+
+  // ✅ Prefill Data (Correct dependency handling)
   useEffect(() => {
-  if (data && brandOptions.length > 0) {
-    const merchant = data as Merchant;
+    if (data) {
+      const merchant = data as Merchant;
 
-    form.reset({
-      business_name: merchant.business_name,
-      business_email: merchant.business_email,
-      business_phone: merchant.business_phone,
-      full_address: merchant.full_address,
-      city: merchant.city,
-      state: merchant.state,
-      latitude: merchant.latitude,
-      longitude: merchant.longitude,
-      contact_persons: merchant.contact_persons || [],
-      working_days: merchant.working_days || [],
-      brands: merchant.brands || [],
-      active: merchant.active,
-    });
-  }
-}, [data, brandOptions.length]);
-
-
-  const brandOptions =
-    brandData?.data?.map((brand: MasterCarBrand) => ({
-      label: brand.display_name,
-      value: brand.id,
-    })) || [];
-
-  const daysOptions = [
-    { label: "Monday", value: "Monday" },
-    { label: "Tuesday", value: "Tuesday" },
-    { label: "Wednesday", value: "Wednesday" },
-    { label: "Thursday", value: "Thursday" },
-    { label: "Friday", value: "Friday" },
-    { label: "Saturday", value: "Saturday" },
-    { label: "Sunday", value: "Sunday" },
-  ];
+      form.reset({
+        business_name: merchant.business_name,
+        business_email: merchant.business_email,
+        business_phone: merchant.business_phone,
+        full_address: merchant.full_address,
+        city: merchant.city,
+        state: merchant.state,
+        latitude: merchant.latitude,
+        longitude: merchant.longitude,
+        contact_persons: merchant.contact_persons || [],
+        working_days: merchant.working_days || [],
+        brands: merchant.brands || [],
+        active: merchant.active,
+      });
+    }
+  }, [data, form]);
 
   const onSubmit = async (values: FormValues) => {
-  try {
-    const formattedContactPersons = values.contact_persons.map((cp) => ({
-      ...cp,
-      phone: cp.phone ?? null, // ✅ force undefined → null
-    }));
+    try {
+      const formattedContactPersons = values.contact_persons.map((cp) => ({
+        ...cp,
+        phone: cp.phone ?? null,
+      }));
 
-    await updateMerchant({
-      id: merchantId,
-      ...values,
-      contact_persons: formattedContactPersons,
-    }).unwrap();
+      await updateMerchant({
+        id: merchantId,
+        ...values,
+        contact_persons: formattedContactPersons,
+      }).unwrap();
 
-    toast.success("Merchant updated successfully");
-    router.push("/merchant");
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to update merchant");
-  }
-};
+      toast.success("Merchant updated successfully");
+      router.push("/merchant");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update merchant");
+    }
+  };
 
   return (
     <div className="container max-w-5xl py-10">
@@ -149,7 +157,7 @@ const EditMerchantPage = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          
+
           {/* Business Name */}
           <FormField
             control={form.control}
@@ -212,61 +220,58 @@ const EditMerchantPage = () => {
 
           {/* Working Days */}
           <FormField
-  control={form.control}
-  name="working_days"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Working Days</FormLabel>
-      <FormControl>
-        <MultiSelect
-          options={daysList}
-          value={field.value}              // ✅ THIS WAS MISSING
-          onValueChange={field.onChange}
-          placeholder="Select working days"
-        />
-      </FormControl>
-    </FormItem>
-  )}
-/>
+            control={form.control}
+            name="working_days"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Working Days</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    options={daysOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder="Select working days"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-          {/* Brands */}
-<FormField
-  control={form.control}
-  name="brands"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Car Brands</FormLabel>
-      <FormControl>
-        <MultiSelect
-          options={carBrandsData}
-          value={field.value}              // ✅ THIS WAS MISSING
-          onValueChange={field.onChange}
-          placeholder="Select car brands"
-        />
-      </FormControl>
-    </FormItem>
-  )}
-/>
+          {/* Car Brands */}
+          <FormField
+            control={form.control}
+            name="brands"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Car Brands</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    options={brandOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder="Select car brands"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
           {/* Contact Persons */}
           <div>
             <h3 className="font-semibold mb-3">Contact Persons</h3>
+
             {fields.map((item, index) => (
               <div key={item.id} className="grid grid-cols-4 gap-4 mb-4">
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.name`}
-                  render={({ field }) => (
-                    <Input placeholder="Name" {...field} />
-                  )}
+                  render={({ field }) => <Input placeholder="Name" {...field} />}
                 />
 
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.email`}
-                  render={({ field }) => (
-                    <Input placeholder="Email" {...field} />
-                  )}
+                  render={({ field }) => <Input placeholder="Email" {...field} />}
                 />
 
                 <FormField
