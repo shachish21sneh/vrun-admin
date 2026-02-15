@@ -307,12 +307,12 @@ const CreateMerchantPage: React.FC = () => {
                   <FormItem>
                     <FormLabel>Business Phone number</FormLabel>
                     <FormControl>
-                      <PhoneInput
-                        placeholder="Enter business phone number"
-                        {...field}
-                        defaultCountry="IN"
-                      />
-                    </FormControl>
+<PhoneInput
+  {...field}
+  defaultCountry="IN"
+  value={field.value ?? undefined}
+  onChange={(value) => field.onChange(value ?? undefined)}
+/>                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
