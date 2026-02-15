@@ -84,7 +84,7 @@ const EditMerchantPage = () => {
     name: "contact_persons",
   });
 
-  // ✅ Days Options (Correct)
+  // Days options
   const daysOptions = useMemo(
     () => [
       { label: "Monday", value: "Monday" },
@@ -98,7 +98,7 @@ const EditMerchantPage = () => {
     []
   );
 
-  // ✅ Brand Options (Correct)
+  // Brand options
   const brandOptions = useMemo(
     () =>
       brandData?.data?.map((brand: MasterCarBrand) => ({
@@ -108,27 +108,31 @@ const EditMerchantPage = () => {
     [brandData]
   );
 
-  // ✅ Prefill Data (Correct dependency handling)
+  // ✅ SAFE PREFILL (IMPORTANT FIX)
   useEffect(() => {
-  if (!data) return;
+    if (!data) return;
 
-  const merchant = data as Merchant;
+    // 🔥 IMPORTANT — handle nested API response
+    const merchant: Merchant =
+      (data as any)?.data ?? data;
 
-  form.reset({
-    business_name: merchant.business_name,
-    business_email: merchant.business_email,
-    business_phone: merchant.business_phone,
-    full_address: merchant.full_address,
-    city: merchant.city,
-    state: merchant.state,
-    latitude: merchant.latitude,
-    longitude: merchant.longitude,
-    contact_persons: merchant.contact_persons || [],
-    working_days: merchant.working_days || [],
-    brands: merchant.brands || [],
-    active: merchant.active,
-  });
-}, [data, form]);
+    console.log("Prefill Merchant:", merchant);
+
+    form.reset({
+      business_name: merchant.business_name ?? "",
+      business_email: merchant.business_email ?? "",
+      business_phone: merchant.business_phone ?? "",
+      full_address: merchant.full_address ?? "",
+      city: merchant.city ?? "",
+      state: merchant.state ?? "",
+      latitude: merchant.latitude ?? 0,
+      longitude: merchant.longitude ?? 0,
+      contact_persons: merchant.contact_persons ?? [],
+      working_days: merchant.working_days ?? [],
+      brands: merchant.brands ?? [],
+      active: merchant.active ?? true,
+    });
+  }, [data, form]);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -158,7 +162,6 @@ const EditMerchantPage = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-          {/* Business Name */}
           <FormField
             control={form.control}
             name="business_name"
@@ -172,7 +175,6 @@ const EditMerchantPage = () => {
             )}
           />
 
-          {/* Email */}
           <FormField
             control={form.control}
             name="business_email"
@@ -186,7 +188,6 @@ const EditMerchantPage = () => {
             )}
           />
 
-          {/* Phone */}
           <FormField
             control={form.control}
             name="business_phone"
@@ -204,7 +205,6 @@ const EditMerchantPage = () => {
             )}
           />
 
-          {/* Address */}
           <FormField
             control={form.control}
             name="full_address"
@@ -220,41 +220,41 @@ const EditMerchantPage = () => {
 
           {/* Working Days */}
           <FormField
-  control={form.control}
-  name="working_days"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Working Days</FormLabel>
-      <FormControl>
-        <MultiSelect
-          options={daysOptions}              // ✅ FIXED
-          value={field.value || []}          // ✅ important
-          onValueChange={field.onChange}
-          placeholder="Select working days"
-        />
-      </FormControl>
-    </FormItem>
-  )}
-/>
+            control={form.control}
+            name="working_days"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Working Days</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    options={daysOptions}
+                    value={field.value || []}
+                    onValueChange={field.onChange}
+                    placeholder="Select working days"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-          {/* Car Brands */}
+          {/* Brands */}
           <FormField
-  control={form.control}
-  name="brands"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Car Brands</FormLabel>
-      <FormControl>
-        <MultiSelect
-          options={brandOptions}             // ✅ FIXED
-          value={field.value || []}          // ✅ important
-          onValueChange={field.onChange}
-          placeholder="Select car brands"
-        />
-      </FormControl>
-    </FormItem>
-  )}
-/>
+            control={form.control}
+            name="brands"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Car Brands</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    options={brandOptions}
+                    value={field.value || []}
+                    onValueChange={field.onChange}
+                    placeholder="Select car brands"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
           {/* Contact Persons */}
           <div>
@@ -262,16 +262,21 @@ const EditMerchantPage = () => {
 
             {fields.map((item, index) => (
               <div key={item.id} className="grid grid-cols-4 gap-4 mb-4">
+
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.name`}
-                  render={({ field }) => <Input placeholder="Name" {...field} />}
+                  render={({ field }) => (
+                    <Input placeholder="Name" {...field} />
+                  )}
                 />
 
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.email`}
-                  render={({ field }) => <Input placeholder="Email" {...field} />}
+                  render={({ field }) => (
+                    <Input placeholder="Email" {...field} />
+                  )}
                 />
 
                 <FormField
@@ -318,6 +323,7 @@ const EditMerchantPage = () => {
           <Button type="submit" className="w-full">
             Update Merchant
           </Button>
+
         </form>
       </Form>
     </div>
