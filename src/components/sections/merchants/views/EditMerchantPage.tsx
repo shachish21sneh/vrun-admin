@@ -12,7 +12,6 @@ import {
   useGetMerchantDetailsQuery,
   useUpdateMerchantMutation,
 } from "@/toolkit/merchants/merchants.api";
-
 import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 import { commonState } from "@/toolkit/common/common.slice";
 
@@ -87,12 +86,8 @@ const EditMerchantPage = () => {
   const { useGetAllCarBrandsQuery } = masterCarBrandsApi;
   const { data: brandData } = useGetAllCarBrandsQuery();
 
-  /* -------- IMAGE STATE (IMPORTANT) -------- */
-
   const [existingImage, setExistingImage] = useState<string | null>(null);
   const [newImage, setNewImage] = useState<File | null>(null);
-
-  /* ---------------- FORM ---------------- */
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -178,8 +173,6 @@ const EditMerchantPage = () => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-          "X-Nhost-Bucket-Id": "public",
         },
       }
     );
@@ -223,16 +216,14 @@ const EditMerchantPage = () => {
         imageUrl = await uploadImage(newImage);
       }
 
-      const formattedContactPersons = values.contact_persons.map((cp) => ({
-        ...cp,
-        phone: cp.phone ?? null,
-      }));
-
       await updateMerchant({
         id: merchantId,
         ...values,
         image_url: imageUrl ?? "",
-        contact_persons: formattedContactPersons,
+        contact_persons: values.contact_persons.map((cp) => ({
+          ...cp,
+          phone: cp.phone ?? null,
+        })),
       }).unwrap();
 
       toast.success("Merchant updated successfully");
@@ -252,10 +243,9 @@ const EditMerchantPage = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-          {/* IMAGE FIELD */}
+          {/* Image */}
           <div>
             <FormLabel>Business Logo</FormLabel>
-
             {existingImage && !newImage && (
               <img
                 src={existingImage}
@@ -263,7 +253,6 @@ const EditMerchantPage = () => {
                 className="w-32 h-32 object-cover rounded mb-3"
               />
             )}
-
             <FileUploader
               value={newImage ? [newImage] : []}
               onValueChange={(files) => {
@@ -274,8 +263,7 @@ const EditMerchantPage = () => {
             />
           </div>
 
-          {/* Rest of your fields remain same */}
-
+          {/* Basic Info */}
           <FormField
             control={form.control}
             name="business_name"
@@ -289,11 +277,177 @@ const EditMerchantPage = () => {
             )}
           />
 
-          {/* Continue rest of form same as before */}
-          
+          <FormField
+            control={form.control}
+            name="business_email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="business_phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <PhoneInput {...field} defaultCountry="IN" />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/* Address */}
+          <FormField
+            control={form.control}
+            name="full_address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Address</FormLabel>
+                <FormControl>
+                  <Autocomplete
+                    apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY}
+                    value={field.value}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      field.onChange(e.target.value)
+                    }
+                    onPlaceSelected={handlePlaceSelected}
+                    className="w-full border border-input rounded-md h-9 px-3"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <div className="flex gap-4">
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input {...field} readOnly />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>State</FormLabel>
+                  <FormControl>
+                    <Input {...field} readOnly />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Working Days */}
+          <FormField
+            control={form.control}
+            name="working_days"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Working Days</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    options={daysOptions}
+                    value={field.value ?? []}
+                    onValueChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/* Brands */}
+          <FormField
+            control={form.control}
+            name="brands"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Car Brands</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    options={brandOptions}
+                    value={field.value ?? []}
+                    onValueChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/* Contact Persons */}
+          <div>
+            <h3 className="font-semibold mb-3">Contact Persons</h3>
+
+            {fields.map((item, index) => (
+              <div key={item.id} className="grid grid-cols-4 gap-4 mb-4">
+
+                <FormField
+                  control={form.control}
+                  name={`contact_persons.${index}.name`}
+                  render={({ field }) => <Input {...field} />}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`contact_persons.${index}.email`}
+                  render={({ field }) => <Input {...field} />}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`contact_persons.${index}.phone`}
+                  render={({ field }) => (
+                    <PhoneInput {...field} defaultCountry="IN" />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`contact_persons.${index}.position`}
+                  render={({ field }) => <Input {...field} />}
+                />
+
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => remove(index)}
+                >
+                  Remove
+                </Button>
+
+              </div>
+            ))}
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                append({ name: "", email: "", position: "", phone: "" })
+              }
+            >
+              Add Contact Person
+            </Button>
+          </div>
+
           <Button type="submit" className="w-full">
             Update Merchant
           </Button>
+
         </form>
       </Form>
     </div>
