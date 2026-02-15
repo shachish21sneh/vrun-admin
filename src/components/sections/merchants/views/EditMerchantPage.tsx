@@ -24,7 +24,7 @@ import {
   FormControl,
 } from "@/components/ui/form";
 
-import { MasterCarBrand, Merchant } from "@/constants/data";
+import { MasterCarBrand } from "@/constants/data";
 
 type ContactPersonForm = {
   name: string;
@@ -115,13 +115,8 @@ const EditMerchantPage = () => {
   useEffect(() => {
   if (!data) return;
 
-  // 🔥 Force correct structure
-  const merchant = (data as any)?.data ?? data;
-
-setTimeout(() => {
-  console.log("AFTER RESET working_days:", form.getValues("working_days"));
-  console.log("AFTER RESET brands:", form.getValues("brands"));
-}, 100);
+  const merchant =
+    (data as MerchantApiResponse)?.data ?? (data as FormValues);
 
   if (!merchant) return;
 
@@ -139,8 +134,7 @@ setTimeout(() => {
     brands: merchant.brands ?? [],
     active: merchant.active ?? true,
   });
-
-}, [data]);
+}, [data, form]);
 
   const onSubmit = async (values: FormValues) => {
     try {
