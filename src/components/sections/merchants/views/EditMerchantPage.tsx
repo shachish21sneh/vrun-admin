@@ -110,29 +110,27 @@ const EditMerchantPage = () => {
 
   // ✅ SAFE PREFILL (IMPORTANT FIX)
   useEffect(() => {
-    if (!data) return;
+  if (!data) return;
 
-    // 🔥 IMPORTANT — handle nested API response
-    const merchant: Merchant =
-      (data as any)?.data ?? data;
+  // handle both possible shapes safely
+  const merchant: Merchant =
+    "data" in data ? (data.data as Merchant) : (data as Merchant);
 
-    console.log("Prefill Merchant:", merchant);
-
-    form.reset({
-      business_name: merchant.business_name ?? "",
-      business_email: merchant.business_email ?? "",
-      business_phone: merchant.business_phone ?? "",
-      full_address: merchant.full_address ?? "",
-      city: merchant.city ?? "",
-      state: merchant.state ?? "",
-      latitude: merchant.latitude ?? 0,
-      longitude: merchant.longitude ?? 0,
-      contact_persons: merchant.contact_persons ?? [],
-      working_days: merchant.working_days ?? [],
-      brands: merchant.brands ?? [],
-      active: merchant.active ?? true,
-    });
-  }, [data, form]);
+  form.reset({
+    business_name: merchant.business_name ?? "",
+    business_email: merchant.business_email ?? "",
+    business_phone: merchant.business_phone ?? "",
+    full_address: merchant.full_address ?? "",
+    city: merchant.city ?? "",
+    state: merchant.state ?? "",
+    latitude: merchant.latitude ?? 0,
+    longitude: merchant.longitude ?? 0,
+    contact_persons: merchant.contact_persons ?? [],
+    working_days: merchant.working_days ?? [],
+    brands: merchant.brands ?? [],
+    active: merchant.active ?? true,
+  });
+}, [data, form]);
 
   const onSubmit = async (values: FormValues) => {
     try {
