@@ -181,18 +181,30 @@ const CreateMerchantPage: React.FC = () => {
       imageUrl = await handleFileUpload(formData.image_url[0]);
     }
 
-	await createMerchant({
-	...formData,
-	image_url: imageUrl ?? "",
-	contact_persons: formData.contact_persons || [],
-	password: "12345678",
-	}).unwrap();
+    const payload = {
+      ...formData,
+      image_url: imageUrl ?? "",
+      working_days: formData.working_days ?? [],
+      brands: formData.brands ?? [],
+      contact_persons:
+        formData.contact_persons?.map((cp) => ({
+          ...cp,
+          phone: cp.phone ?? null,
+        })) ?? [],
+      latitude: Number(formData.latitude ?? 0),
+      longitude: Number(formData.longitude ?? 0),
+      password: "12345678",
+    };
+
+    console.log("FINAL PAYLOAD:", payload);
+
+    await createMerchant(payload).unwrap();
 
     toast.success("Merchant created successfully!");
     router.push("/merchant");
 
   } catch (error: any) {
-    console.error("Submission Error:", error);
+    console.error("FULL ERROR:", error);
 
     const message =
       error?.data?.message ||
@@ -200,7 +212,7 @@ const CreateMerchantPage: React.FC = () => {
       error?.error ||
       "Something went wrong. Please try again.";
 
-    const field = error?.data?.field; // if backend sends which field failed
+    const field = error?.data?.field;
 
     if (field) {
       form.setError(field as keyof FormValues, {
@@ -306,11 +318,12 @@ const CreateMerchantPage: React.FC = () => {
                   <FormItem>
                     <FormLabel>Business Phone number</FormLabel>
                     <FormControl>
-                      <PhoneInput
-                        placeholder="Enter business phone number"
-                        {...field}
-                        defaultCountry="IN"
-                      />
+					<PhoneInput
+					{...field}
+					defaultCountry="IN"
+					value={field.value ?? undefined}
+					onChange={(value) => field.onChange(value ?? "")}
+					/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -435,12 +448,12 @@ const CreateMerchantPage: React.FC = () => {
                       <FormItem>
                         <FormLabel>Phone</FormLabel>
                         <FormControl>
-                          <PhoneInput
-                            placeholder="Enter phone number"
-                            {...field}
-                            defaultCountry="IN"
-                            value={field.value ?? undefined}
-                          />
+						<PhoneInput
+						{...field}
+						defaultCountry="IN"
+						value={field.value ?? undefined}
+						onChange={(value) => field.onChange(value ?? "")}
+						/>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
