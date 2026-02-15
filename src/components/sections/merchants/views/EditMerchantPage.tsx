@@ -84,6 +84,9 @@ const EditMerchantPage = () => {
     name: "contact_persons",
   });
 
+console.log("FORM working_days:", form.watch("working_days"));
+console.log("FORM brands:", form.watch("brands"));
+
   // Days options
   const daysOptions = useMemo(
     () => [
@@ -115,6 +118,10 @@ const EditMerchantPage = () => {
   // handle both possible shapes safely
   const merchant: Merchant =
     "data" in data ? (data.data as Merchant) : (data as Merchant);
+	
+	  console.log("MERCHANT WORKING DAYS:", merchant.working_days);
+  console.log("MERCHANT BRANDS:", merchant.brands);
+
 
   form.reset({
     business_name: merchant.business_name ?? "",
