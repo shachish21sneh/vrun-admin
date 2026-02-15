@@ -1,40 +1,38 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useRouter } from "next/router";
+import { useRouter, useParams } from "next/navigation";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { FileUploader } from "@/components/file-uploader";
 
-import { commonState } from "@/toolkit/common/common.slice";
-import { useGetMerchantDetailsQuery, useUpdateMerchantMutation } from "@/toolkit/merchants/merchants.api";
-import { useGetAllCarBrandsQuery } from "@/toolkit/masterCarBrands/masterCarBrands.api";
-
+import { merchantsApi } from "@/toolkit/merchants/merchants.api";
+import { masterCarBrandsApi } from "@/toolkit/masterCarBrands/masterCarBrands.api";
 import { MasterCarBrand } from "@/constants/data";
-import { CarFront, Trash2 } from "lucide-react";
+import { Trash2, CarFront } from "lucide-react";
 
 const formSchema = z.object({
   business_name: z.string().min(1),
-  business_email: z.string().email(),
-  business_phone: z.string().min(10),
-  full_address: z.string(),
+  business_email: z.string().min(1),
+  business_phone: z.string().min(1),
+  full_address: z.string().min(1),
   city: z.string().optional(),
   state: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
-  active: z.boolean(),
-  brands: z.array(z.string()),
-  working_days: z.array(z.string()),
   contact_persons: z.array(
     z.object({
       name: z.string(),
@@ -43,22 +41,39 @@ const formSchema = z.object({
       position: z.string(),
     })
   ),
+  working_days: z.array(z.string()),
+  brands: z.array(z.string()),
+  active: z.boolean().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const EditMerchantPage = () => {
+const daysList = [
+  { value: "Monday", label: "Monday" },
+  { value: "Tuesday", label: "Tuesday" },
+  { value: "Wednesday", label: "Wednesday" },
+  { value: "Thursday", label: "Thursday" },
+  { value: "Friday", label: "Friday" },
+  { value: "Saturday", label: "Saturday" },
+  { value: "Sunday", label: "Sunday" },
+];
+
+const EditMerchantPage: React.FC = () => {
   const router = useRouter();
-  const { id } = router.query;
-  const { token } = useSelector(commonState);
+  const params = useParams();
+  const merchantId = params?.id as string;
 
-  const { data, isLoading } = useGetMerchantDetailsQuery(
-    id ? { id: id as string } : undefined,
-    { skip: !id }
-  );
+  const { useGetMerchantDetailsQuery, useUpdateMerchantMutation } =
+    merchantsApi;
+  const { useGetAllCarBrandsQuery } = masterCarBrandsApi;
 
-  const { data: brandData } = useGetAllCarBrandsQuery();
-  const [updateMerchant] = useUpdateMerchantMutation();
+  const { data, isLoading } =
+    useGetMerchantDetailsQuery({ id: merchantId });
+
+  const { data: brandsData } = useGetAllCarBrandsQuery();
+
+  const [updateMerchant, { isLoading: updating }] =
+    useUpdateMerchantMutation();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -71,42 +86,34 @@ const EditMerchantPage = () => {
       state: "",
       latitude: 0,
       longitude: 0,
-      active: true,
-      brands: [],
-      working_days: [],
       contact_persons: [],
+      working_days: [],
+      brands: [],
+      active: true,
     },
   });
 
-  const { fields, append, remove, replace } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "contact_persons",
   });
 
-  // ------------------------
-  // PREFILL DATA
-  // ------------------------
+  // Reset form when data loads
   useEffect(() => {
     if (data) {
       form.reset({
-        business_name: data.business_name,
-        business_email: data.business_email,
-        business_phone: data.business_phone,
-        full_address: data.full_address,
-        city: data.city,
-        state: data.state,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        active: data.active,
-        brands: data.brands || [],
-        working_days: data.working_days || [],
+        ...data,
         contact_persons: data.contact_persons || [],
+        working_days: data.working_days || [],
+        brands: data.brands || [],
       });
     }
-  }, [data]);
+  }, [data, form]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   const carBrandsOptions =
-    brandData?.data?.map((brand: MasterCarBrand) => ({
+    brandsData?.data?.map((brand: MasterCarBrand) => ({
       label: brand.display_name,
       value: brand.id,
       icon: CarFront,
@@ -114,33 +121,28 @@ const EditMerchantPage = () => {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const payload: any = { ...values };
-
-      // remove password if empty
-      if (!values.password) {
-        delete payload.password;
-      }
-
       await updateMerchant({
-        id: id as string,
-        ...payload,
+        id: merchantId,
+        ...values,
       }).unwrap();
 
       toast.success("Merchant updated successfully");
       router.push("/merchant");
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Update failed");
+    } catch (error: any) {
+      toast.error(error?.data || "Update failed");
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-
   return (
-    <div className="container">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+    <div className="container space-y-6">
+      <h2 className="text-xl font-semibold">Edit Merchant</h2>
 
-          {/* BUSINESS INFO */}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6"
+        >
+          {/* Basic Info */}
           <div className="grid grid-cols-3 gap-4">
             <FormField
               control={form.control}
@@ -160,7 +162,7 @@ const EditMerchantPage = () => {
               name="business_email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Business Email</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -173,7 +175,7 @@ const EditMerchantPage = () => {
               name="business_phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Business Phone</FormLabel>
+                  <FormLabel>Phone</FormLabel>
                   <FormControl>
                     <PhoneInput {...field} defaultCountry="IN" />
                   </FormControl>
@@ -182,56 +184,74 @@ const EditMerchantPage = () => {
             />
           </div>
 
-          {/* CONTACT PERSONS */}
+          {/* Contact Persons */}
           <div>
             <FormLabel>Contact Persons</FormLabel>
 
             {fields.map((item, index) => (
-              <div key={item.id} className="grid grid-cols-4 gap-3 mb-3">
-                <Input {...form.register(`contact_persons.${index}.name`)} placeholder="Name" />
-                <Input {...form.register(`contact_persons.${index}.email`)} placeholder="Email" />
-                <Input {...form.register(`contact_persons.${index}.phone`)} placeholder="Phone" />
-                <Input {...form.register(`contact_persons.${index}.position`)} placeholder="Position" />
+              <div key={item.id} className="grid grid-cols-4 gap-4 mt-3">
+                <FormField
+                  control={form.control}
+                  name={`contact_persons.${index}.name`}
+                  render={({ field }) => (
+                    <Input placeholder="Name" {...field} />
+                  )}
+                />
 
-                <Trash2 onClick={() => remove(index)} />
+                <FormField
+                  control={form.control}
+                  name={`contact_persons.${index}.email`}
+                  render={({ field }) => (
+                    <Input placeholder="Email" {...field} />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`contact_persons.${index}.phone`}
+                  render={({ field }) => (
+                    <PhoneInput {...field} defaultCountry="IN" />
+                  )}
+                />
+
+                <div className="flex items-center">
+                  <Trash2
+                    className="cursor-pointer"
+                    onClick={() => remove(index)}
+                  />
+                </div>
               </div>
             ))}
 
             <Button
               type="button"
+              variant="outline"
               onClick={() =>
-                append({ name: "", email: "", phone: "", position: "" })
+                append({
+                  name: "",
+                  email: "",
+                  phone: "",
+                  position: "",
+                })
               }
+              className="mt-3"
             >
               Add Contact Person
             </Button>
           </div>
 
-          {/* MULTI SELECTS */}
+          {/* Working Days + Brands */}
           <div className="grid grid-cols-2 gap-4">
-
             <FormField
               control={form.control}
               name="working_days"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Days</FormLabel>
-                  <FormControl>
-                    <MultiSelect
-                      options={[
-                        { label: "Monday", value: "Monday" },
-                        { label: "Tuesday", value: "Tuesday" },
-                        { label: "Wednesday", value: "Wednesday" },
-                        { label: "Thursday", value: "Thursday" },
-                        { label: "Friday", value: "Friday" },
-                        { label: "Saturday", value: "Saturday" },
-                        { label: "Sunday", value: "Sunday" },
-                      ]}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
+                <MultiSelect
+                  options={daysList}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  placeholder="Select working days"
+                />
               )}
             />
 
@@ -239,24 +259,23 @@ const EditMerchantPage = () => {
               control={form.control}
               name="brands"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Car Brands</FormLabel>
-                  <FormControl>
-                    <MultiSelect
-                      options={carBrandsOptions}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
+                <MultiSelect
+                  options={carBrandsOptions}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  placeholder="Select brands"
+                />
               )}
             />
           </div>
 
-          <Button type="submit" className="w-full">
-            Update Merchant
+          <Button
+            type="submit"
+            disabled={updating}
+            className="w-full"
+          >
+            {updating ? "Updating..." : "Update Merchant"}
           </Button>
-
         </form>
       </Form>
     </div>
