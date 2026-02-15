@@ -27,6 +27,8 @@ import {
 
 import { MasterCarBrand } from "@/constants/data";
 
+/* ---------------- TYPES ---------------- */
+
 type ContactPersonForm = {
   name: string;
   email: string;
@@ -48,6 +50,23 @@ type FormValues = {
   brands: string[];
   active?: boolean;
 };
+
+type GooglePlace = {
+  formatted_address?: string;
+  address_components?: {
+    long_name: string;
+    short_name: string;
+    types: string[];
+  }[];
+  geometry?: {
+    location?: {
+      lat: () => number;
+      lng: () => number;
+    };
+  };
+};
+
+/* ---------------- COMPONENT ---------------- */
 
 const EditMerchantPage = () => {
   const router = useRouter();
@@ -85,7 +104,8 @@ const EditMerchantPage = () => {
     name: "contact_persons",
   });
 
-  // Days
+  /* ---------------- OPTIONS ---------------- */
+
   const daysOptions = useMemo(
     () => [
       { label: "Monday", value: "Monday" },
@@ -99,7 +119,6 @@ const EditMerchantPage = () => {
     []
   );
 
-  // Brands
   const brandOptions = useMemo(
     () =>
       brandData?.data?.map((brand: MasterCarBrand) => ({
@@ -109,46 +128,48 @@ const EditMerchantPage = () => {
     [brandData]
   );
 
-  // Prefill data
+  /* ---------------- PREFILL ---------------- */
+
   useEffect(() => {
-  if (!data) return;
+    if (!data) return;
 
-  const merchant = data as FormValues;
+    const merchant = data as FormValues;
 
-  form.reset({
-    business_name: merchant.business_name ?? "",
-    business_email: merchant.business_email ?? "",
-    business_phone: merchant.business_phone ?? "",
-    full_address: merchant.full_address ?? "",
-    city: merchant.city ?? "",
-    state: merchant.state ?? "",
-    latitude: merchant.latitude ?? 0,
-    longitude: merchant.longitude ?? 0,
-    contact_persons: merchant.contact_persons ?? [],
-    working_days: merchant.working_days ?? [],
-    brands: merchant.brands ?? [],
-    active: merchant.active ?? true,
-  });
-}, [data, form]);
+    form.reset({
+      business_name: merchant.business_name ?? "",
+      business_email: merchant.business_email ?? "",
+      business_phone: merchant.business_phone ?? "",
+      full_address: merchant.full_address ?? "",
+      city: merchant.city ?? "",
+      state: merchant.state ?? "",
+      latitude: merchant.latitude ?? 0,
+      longitude: merchant.longitude ?? 0,
+      contact_persons: merchant.contact_persons ?? [],
+      working_days: merchant.working_days ?? [],
+      brands: merchant.brands ?? [],
+      active: merchant.active ?? true,
+    });
+  }, [data, form]);
 
-  // Google place select
-  const handlePlaceSelected = (place: google.maps.places.PlaceResult) => {
+  /* ---------------- GOOGLE ADDRESS ---------------- */
+
+  const handlePlaceSelected = (place: GooglePlace) => {
     if (!place) return;
 
-    const address = place.formatted_address || "";
+    const address = place.formatted_address ?? "";
 
     const city =
       place.address_components?.find((c) =>
         c.types.includes("locality")
-      )?.long_name || "";
+      )?.long_name ?? "";
 
     const state =
       place.address_components?.find((c) =>
         c.types.includes("administrative_area_level_1")
-      )?.short_name || "";
+      )?.short_name ?? "";
 
-    const latitude = place.geometry?.location?.lat() || 0;
-    const longitude = place.geometry?.location?.lng() || 0;
+    const latitude = place.geometry?.location?.lat?.() ?? 0;
+    const longitude = place.geometry?.location?.lng?.() ?? 0;
 
     form.setValue("full_address", address);
     form.setValue("city", city);
@@ -156,6 +177,8 @@ const EditMerchantPage = () => {
     form.setValue("latitude", latitude);
     form.setValue("longitude", longitude);
   };
+
+  /* ---------------- SUBMIT ---------------- */
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -178,6 +201,8 @@ const EditMerchantPage = () => {
     }
   };
 
+  /* ---------------- UI ---------------- */
+
   return (
     <div className="container max-w-5xl py-10">
       <h2 className="text-2xl font-semibold mb-6">Edit Merchant</h2>
@@ -185,7 +210,7 @@ const EditMerchantPage = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-          {/* Basic Fields */}
+          {/* Business Name */}
           <FormField
             control={form.control}
             name="business_name"
@@ -199,6 +224,7 @@ const EditMerchantPage = () => {
             )}
           />
 
+          {/* Email */}
           <FormField
             control={form.control}
             name="business_email"
@@ -212,6 +238,7 @@ const EditMerchantPage = () => {
             )}
           />
 
+          {/* Phone */}
           <FormField
             control={form.control}
             name="business_phone"
@@ -229,7 +256,7 @@ const EditMerchantPage = () => {
             )}
           />
 
-          {/* Address with Google */}
+          {/* Address */}
           <FormField
             control={form.control}
             name="full_address"
@@ -239,7 +266,10 @@ const EditMerchantPage = () => {
                 <FormControl>
                   <Autocomplete
                     apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY}
-                    defaultValue={field.value}
+                    value={field.value}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      field.onChange(e.target.value)
+                    }
                     onPlaceSelected={handlePlaceSelected}
                     className="w-full border border-input rounded-md h-9 px-3"
                     options={{
@@ -325,13 +355,13 @@ const EditMerchantPage = () => {
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.name`}
-                  render={({ field }) => <Input placeholder="Name" {...field} />}
+                  render={({ field }) => <Input {...field} />}
                 />
 
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.email`}
-                  render={({ field }) => <Input placeholder="Email" {...field} />}
+                  render={({ field }) => <Input {...field} />}
                 />
 
                 <FormField
@@ -349,9 +379,7 @@ const EditMerchantPage = () => {
                 <FormField
                   control={form.control}
                   name={`contact_persons.${index}.position`}
-                  render={({ field }) => (
-                    <Input placeholder="Position" {...field} />
-                  )}
+                  render={({ field }) => <Input {...field} />}
                 />
 
                 <Button
