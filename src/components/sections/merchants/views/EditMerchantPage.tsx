@@ -48,9 +48,6 @@ type FormValues = {
   active?: boolean;
 };
 
-type MerchantApiResponse = {
-  data: FormValues;
-};
 
 const EditMerchantPage = () => {
   const router = useRouter();
