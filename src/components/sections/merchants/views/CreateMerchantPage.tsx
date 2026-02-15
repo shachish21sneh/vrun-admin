@@ -488,15 +488,16 @@ const CreateMerchantPage: React.FC = () => {
                   <FormItem>
                     <FormLabel>Select Days</FormLabel>
                     <FormControl>
-                      <MultiSelect
-                        options={daysList}
-                        onValueChange={field.onChange}
-                        placeholder="Select working days"
-                        variant="inverted"
-                        animation={2}
-                        maxCount={3}
-                      />
-                    </FormControl>
+					<MultiSelect
+					  options={daysList}
+					  value={field.value ?? []}
+					  onValueChange={field.onChange}
+					  placeholder="Select working days"
+					  variant="inverted"
+					  animation={2}
+					  maxCount={3}
+					/>  
+					</FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -510,16 +511,16 @@ const CreateMerchantPage: React.FC = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Select Car Brands</FormLabel>
-                    <FormControl>
-                      <MultiSelect
-                        options={carBrandsData}
-                        onValueChange={field.onChange}
-                        placeholder="Select car brands"
-                        variant="inverted"
-                        animation={2}
-                        maxCount={3}
-                      />
-                    </FormControl>
+					<MultiSelect
+					  options={carBrandsData}
+					  value={field.value ?? []}
+					  onValueChange={field.onChange}
+					  placeholder="Select car brands"
+					  variant="inverted"
+					  animation={2}
+					  maxCount={3}
+					/> 
+					</FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
