@@ -254,13 +254,15 @@ const EditMerchantPage = () => {
               />
             )}
             <FileUploader
-              value={newImage ? [newImage] : []}
-              onValueChange={(files) => {
-                if (files?.[0]) setNewImage(files[0]);
-              }}
-              maxFiles={1}
-              maxSize={5 * 1024 * 1024}
-            />
+  value={newImage ? [newImage] : []}
+  onValueChange={(files) => {
+    if (Array.isArray(files) && files.length > 0) {
+      setNewImage(files[0]);
+    }
+  }}
+  maxFiles={1}
+  maxSize={5 * 1024 * 1024}
+/>
           </div>
 
           {/* Basic Info */}
