@@ -48,6 +48,10 @@ type FormValues = {
   active?: boolean;
 };
 
+type MerchantApiResponse = {
+  data: FormValues;
+};
+
 const EditMerchantPage = () => {
   const router = useRouter();
   const params = useParams();
@@ -84,10 +88,7 @@ const EditMerchantPage = () => {
     name: "contact_persons",
   });
 
-//console.log("FORM working_days:", form.watch("working_days"));
-//console.log("FORM brands:", form.watch("brands"));
-
-  // Days options
+  // Working Days options
   const daysOptions = useMemo(
     () => [
       { label: "Monday", value: "Monday" },
@@ -111,30 +112,30 @@ const EditMerchantPage = () => {
     [brandData]
   );
 
-  // ✅ SAFE PREFILL (IMPORTANT FIX)
+  // Prefill
   useEffect(() => {
-  if (!data) return;
+    if (!data) return;
 
-  const merchant =
-    (data as MerchantApiResponse)?.data ?? (data as FormValues);
+    const merchant =
+      (data as MerchantApiResponse)?.data ?? (data as FormValues);
 
-  if (!merchant) return;
+    if (!merchant) return;
 
-  form.reset({
-    business_name: merchant.business_name ?? "",
-    business_email: merchant.business_email ?? "",
-    business_phone: merchant.business_phone ?? "",
-    full_address: merchant.full_address ?? "",
-    city: merchant.city ?? "",
-    state: merchant.state ?? "",
-    latitude: merchant.latitude ?? 0,
-    longitude: merchant.longitude ?? 0,
-    contact_persons: merchant.contact_persons ?? [],
-    working_days: merchant.working_days ?? [],
-    brands: merchant.brands ?? [],
-    active: merchant.active ?? true,
-  });
-}, [data, form]);
+    form.reset({
+      business_name: merchant.business_name ?? "",
+      business_email: merchant.business_email ?? "",
+      business_phone: merchant.business_phone ?? "",
+      full_address: merchant.full_address ?? "",
+      city: merchant.city ?? "",
+      state: merchant.state ?? "",
+      latitude: merchant.latitude ?? 0,
+      longitude: merchant.longitude ?? 0,
+      contact_persons: merchant.contact_persons ?? [],
+      working_days: merchant.working_days ?? [],
+      brands: merchant.brands ?? [],
+      active: merchant.active ?? true,
+    });
+  }, [data, form]);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -230,7 +231,7 @@ const EditMerchantPage = () => {
                 <FormControl>
                   <MultiSelect
                     options={daysOptions}
-                    value={field.value || []}
+                    value={field.value ?? []}
                     onValueChange={field.onChange}
                     placeholder="Select working days"
                   />
@@ -249,7 +250,7 @@ const EditMerchantPage = () => {
                 <FormControl>
                   <MultiSelect
                     options={brandOptions}
-                    value={field.value || []}
+                    value={field.value ?? []}
                     onValueChange={field.onChange}
                     placeholder="Select car brands"
                   />
